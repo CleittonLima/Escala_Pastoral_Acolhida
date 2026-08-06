@@ -1,0 +1,268 @@
+/* ==========================================================================
+   style.css
+   Estilos-base do sistema: reset, tipografia, layout geral, splash screen,
+   cabeçalho, rodapé, botões e formulários.
+   ========================================================================== */
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  font-family: var(--fonte-corpo);
+  background: var(--cor-fundo);
+  color: var(--cor-texto);
+  line-height: 1.5;
+  min-height: 100vh;
+  transition: background var(--transicao-media), color var(--transicao-media);
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--fonte-titulo);
+  color: var(--cor-primaria);
+  line-height: 1.2;
+}
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+button { font-family: inherit; cursor: pointer; }
+
+/* ---- Contêiner principal (mobile-first, centraliza em telas grandes) ---- */
+.app-container {
+  max-width: var(--largura-maxima);
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--cor-fundo);
+  position: relative;
+}
+
+.tela {
+  flex: 1;
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-7);
+  animation: entrada-suave var(--transicao-media) ease;
+}
+
+.tela[hidden] { display: none; }
+
+/* ==========================================================================
+   SPLASH SCREEN
+   ========================================================================== */
+#splash-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: linear-gradient(180deg, var(--cor-primaria-escura), var(--cor-primaria));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--cor-texto-inverso);
+  text-align: center;
+  gap: var(--espaco-4);
+  transition: opacity var(--transicao-lenta), visibility var(--transicao-lenta);
+}
+
+#splash-screen.oculto {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.splash-logo {
+  width: 128px;
+  height: 128px;
+  border-radius: var(--raio-lg);
+  object-fit: contain;
+  background: rgba(255,255,255,0.08);
+  padding: var(--espaco-3);
+  animation: aparecer-de-baixo 700ms ease;
+}
+
+.splash-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-xl);
+  color: var(--cor-texto-inverso);
+  animation: aparecer-de-baixo 700ms ease 100ms both;
+}
+
+.splash-carregando {
+  font-size: var(--tamanho-sm);
+  opacity: 0.85;
+  animation: aparecer-de-baixo 700ms ease 200ms both;
+}
+
+/* Contas de terço — elemento-assinatura de progresso/carregamento */
+.contas-terco {
+  display: flex;
+  gap: var(--espaco-2);
+  margin-top: var(--espaco-2);
+}
+.contas-terco span {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--cor-destaque);
+  opacity: 0.35;
+  animation: pulsar-conta 1.2s ease-in-out infinite;
+}
+.contas-terco span:nth-child(2) { animation-delay: 0.15s; }
+.contas-terco span:nth-child(3) { animation-delay: 0.30s; }
+.contas-terco span:nth-child(4) { animation-delay: 0.45s; }
+.contas-terco span:nth-child(5) { animation-delay: 0.60s; }
+
+.splash-rodape {
+  position: absolute;
+  bottom: var(--espaco-5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-1);
+  font-size: var(--tamanho-xs);
+  opacity: 0.75;
+}
+.splash-rodape img { width: 28px; height: 28px; border-radius: 50%; }
+
+/* ==========================================================================
+   CABEÇALHO / TOPBAR
+   ========================================================================== */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  height: var(--altura-topbar);
+  background: var(--cor-primaria);
+  color: var(--cor-texto-inverso);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--espaco-4);
+  box-shadow: var(--sombra-card);
+}
+
+.topbar-titulo {
+  font-family: var(--fonte-titulo);
+  font-size: var(--tamanho-lg);
+  color: var(--cor-texto-inverso);
+}
+
+.topbar-acao {
+  background: none;
+  border: none;
+  color: var(--cor-texto-inverso);
+  font-size: 1.3rem;
+  padding: var(--espaco-2);
+  border-radius: var(--raio-sm);
+  transition: background var(--transicao-rapida);
+}
+.topbar-acao:hover, .topbar-acao:focus-visible { background: rgba(255,255,255,0.12); }
+
+/* Espaço de destaque para a logo da Pastoral na tela inicial */
+.logo-destaque {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espaco-3);
+  text-align: center;
+  padding: var(--espaco-6) 0 var(--espaco-5);
+}
+.logo-destaque img {
+  width: 110px;
+  height: 110px;
+  object-fit: contain;
+  border-radius: var(--raio-lg);
+  background: var(--cor-card);
+  box-shadow: var(--sombra-card);
+  padding: var(--espaco-3);
+}
+.logo-destaque h1 { font-size: var(--tamanho-xl); }
+.logo-destaque p { color: var(--cor-texto-secundario); font-size: var(--tamanho-sm); }
+
+/* ==========================================================================
+   RODAPÉ
+   ========================================================================== */
+.rodape-app {
+  border-top: 1px solid var(--cor-borda);
+  padding: var(--espaco-4);
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  color: var(--cor-texto-secundario);
+  font-size: var(--tamanho-xs);
+  background: var(--cor-fundo-alt);
+}
+.rodape-app img { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; }
+.rodape-app .rodape-linhas { display: flex; flex-direction: column; gap: 2px; }
+.rodape-app .rodape-linha-principal { color: var(--cor-texto); font-weight: 600; }
+
+/* ==========================================================================
+   BOTÕES
+   ========================================================================== */
+.botao {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-2);
+  padding: var(--espaco-3) var(--espaco-5);
+  border-radius: var(--raio-pill);
+  border: none;
+  font-weight: 600;
+  font-size: var(--tamanho-md);
+  transition: transform var(--transicao-rapida), box-shadow var(--transicao-rapida), background var(--transicao-rapida);
+}
+.botao:active { transform: scale(0.97); }
+.botao:focus-visible { outline: 3px solid var(--cor-destaque); outline-offset: 2px; }
+
+.botao-primario { background: var(--cor-primaria); color: var(--cor-texto-inverso); box-shadow: var(--sombra-card); }
+.botao-primario:hover { box-shadow: var(--sombra-card-hover); }
+
+.botao-secundario { background: transparent; color: var(--cor-primaria); border: 1.5px solid var(--cor-primaria); }
+
+.botao-destaque { background: var(--cor-destaque); color: var(--cor-primaria-escura); }
+
+.botao-texto { background: none; color: var(--cor-texto-secundario); padding: var(--espaco-2); font-weight: 500; }
+
+.botao-bloco { width: 100%; }
+
+/* ==========================================================================
+   CARDS
+   ========================================================================== */
+.card {
+  background: var(--cor-card);
+  border-radius: var(--raio-md);
+  padding: var(--espaco-4);
+  box-shadow: var(--sombra-card);
+  border: 1px solid var(--cor-borda);
+}
+
+/* ==========================================================================
+   FORMULÁRIOS
+   ========================================================================== */
+.campo { margin-bottom: var(--espaco-4); }
+.campo label {
+  display: block;
+  font-size: var(--tamanho-sm);
+  font-weight: 600;
+  color: var(--cor-texto-secundario);
+  margin-bottom: var(--espaco-2);
+}
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: var(--espaco-3);
+  border-radius: var(--raio-sm);
+  border: 1.5px solid var(--cor-borda);
+  background: var(--cor-fundo-alt);
+  color: var(--cor-texto);
+  font-size: var(--tamanho-md);
+  font-family: inherit;
+  transition: border var(--transicao-rapida);
+}
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+}

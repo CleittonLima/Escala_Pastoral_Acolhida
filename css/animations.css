@@ -1,0 +1,44 @@
+/* ==========================================================================
+   animations.css
+   Animações discretas do sistema. Todas respeitam prefers-reduced-motion.
+   ========================================================================== */
+
+@keyframes entrada-suave {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes aparecer-de-baixo {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes subir-modal {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulsar-conta {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.25); }
+}
+
+@keyframes girar {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.icone-girando { animation: girar 900ms linear infinite; }
+
+/* Entrada escalonada de cards em listas (usado via classe .entrada-item + delay inline) */
+.entrada-item {
+  animation: entrada-suave var(--transicao-media) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

@@ -1,0 +1,31 @@
+/* ==========================================================================
+   responsive.css
+   Base do sistema é mobile-first (ver style.css). Este arquivo adiciona
+   ajustes progressivos para telas maiores (tablets e desktop), já que o
+   app também pode ser acessado por coordenadores em computadores.
+   ========================================================================== */
+
+/* ---- Tablets (>= 600px) ---- */
+@media (min-width: 600px) {
+  .grade-dashboard { grid-template-columns: repeat(3, 1fr); }
+  .modal-fundo { align-items: center; }
+  .modal-caixa { border-radius: var(--raio-lg); }
+}
+
+/* ---- Desktop (>= 900px) ---- */
+@media (min-width: 900px) {
+  body { background: var(--cor-primaria-escura); }
+
+  .app-container {
+    box-shadow: var(--sombra-flutuante);
+    min-height: 100vh;
+  }
+
+  .grade-dashboard { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* ---- Telas muito pequenas (<= 340px) ---- */
+@media (max-width: 340px) {
+  .tela { padding: var(--espaco-4) var(--espaco-3) var(--espaco-6); }
+  .cartao-stat .valor { font-size: var(--tamanho-xl); }
+}
