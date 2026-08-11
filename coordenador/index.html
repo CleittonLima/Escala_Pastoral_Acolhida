@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Coordenador — Escala Pastoral do Rosário</title>
+<meta name="description" content="Painel do Coordenador — Pastoral da Acolhida, Paróquia Nossa Senhora do Rosário">
+<meta name="theme-color" content="#40101D">
+
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="../shared/assets/logo/favicon.png">
+<link rel="apple-touch-icon" href="../shared/assets/logo/splash-icon.png">
+
+<link rel="stylesheet" href="../shared/css/variables.css">
+<link rel="stylesheet" href="../shared/css/style.css">
+<link rel="stylesheet" href="../shared/css/components.css">
+<link rel="stylesheet" href="../shared/css/responsive.css">
+<link rel="stylesheet" href="../shared/css/animations.css">
+</head>
+<body data-cor-personalizada>
+
+<div id="splash-screen">
+  <img class="splash-logo" src="../shared/assets/logo/logo-pastoral.png" alt="Logo da Pastoral da Acolhida"
+       onerror="this.src='../shared/assets/logo/splash-icon.png'; this.onerror=null;">
+  <h1 class="splash-titulo">Painel do Coordenador</h1>
+  <p class="splash-carregando">Carregando...</p>
+  <div class="contas-terco" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+  <div class="splash-rodape">
+    <img src="../shared/assets/logo/logo-paroquia.png" alt="" onerror="this.style.display='none'">
+    <span>Paróquia Nossa Senhora do Rosário</span>
+  </div>
+</div>
+
+<div class="app-container" id="app-container">
+
+  <header class="topbar" id="topbar" hidden>
+    <button class="topbar-acao" id="btn-voltar" aria-label="Voltar" hidden>←</button>
+    <span class="topbar-titulo" id="topbar-titulo">Coordenador</span>
+    <button class="topbar-acao" id="btn-notificacoes" aria-label="Notificações">🔔</button>
+  </header>
+
+  <main id="conteudo-principal">
+
+    <!-- ==================================================================
+         LOGIN (única porta de entrada deste app — é o app do coordenador)
+         ================================================================== -->
+    <section class="tela" id="tela-inicial" data-sem-nav="true">
+      <div class="logo-destaque">
+        <img src="../shared/assets/logo/logo-pastoral.png" alt="Logo da Pastoral da Acolhida"
+             onerror="this.src='../shared/assets/logo/splash-icon.png'; this.onerror=null;">
+        <h1>Painel do Coordenador</h1>
+        <p>Escala Pastoral do Rosário — gestão da Pastoral da Acolhida</p>
+      </div>
+
+      <div class="card">
+        <form id="form-login-admin">
+          <div class="campo">
+            <label for="senha-admin">Senha de coordenador</label>
+            <input type="password" id="senha-admin" required>
+          </div>
+          <button type="submit" class="botao botao-primario botao-bloco">Entrar</button>
+        </form>
+      </div>
+
+      <p style="text-align:center; margin-top:20px;">
+        <a href="../membro/index.html" style="color:var(--cor-texto-secundario); font-size:var(--tamanho-sm); text-decoration:underline;">
+          Sou membro da Pastoral
+        </a>
+      </p>
+    </section>
+
+    <!-- ==================================================================
+         PAINEL / DASHBOARD
+         ================================================================== -->
+    <section class="tela" id="tela-admin-dashboard" data-titulo="Painel" hidden>
+      <h2 style="margin-bottom:16px;">Painel Administrativo</h2>
+      <div class="grade-dashboard" id="grade-dashboard-admin"></div>
+      <div id="admin-listas-resumo"></div>
+    </section>
+
+    <!-- ==================================================================
+         MEMBROS
+         ================================================================== -->
+    <section class="tela" id="tela-admin-membros" data-titulo="Membros" hidden>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h2>Membros</h2>
+        <button class="botao botao-primario" id="btn-novo-membro">+ Novo</button>
+      </div>
+      <div class="campo" style="margin-bottom:8px;">
+        <input type="search" id="busca-membros" placeholder="Buscar por nome...">
+      </div>
+      <div id="lista-admin-membros"></div>
+    </section>
+
+    <!-- ==================================================================
+         IGREJAS
+         ================================================================== -->
+    <section class="tela" id="tela-admin-igrejas" data-titulo="Igrejas" hidden>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h2>Igrejas</h2>
+        <button class="botao botao-primario" id="btn-nova-igreja">+ Nova</button>
+      </div>
+      <div id="lista-admin-igrejas"></div>
+    </section>
+
+    <!-- ==================================================================
+         EVENTOS
+         ================================================================== -->
+    <section class="tela" id="tela-admin-eventos" data-titulo="Eventos" hidden>
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <h2>Eventos</h2>
+        <button class="botao botao-primario" id="btn-novo-evento">+ Novo</button>
+      </div>
+      <div id="lista-admin-eventos"></div>
+    </section>
+
+    <!-- ==================================================================
+         GERAR ESCALA
+         ================================================================== -->
+    <section class="tela" id="tela-admin-gerar-escala" data-titulo="Gerar Escala" hidden>
+      <h2 style="margin-bottom:16px;">Gerar Escala</h2>
+      <div id="painel-gerar-escala"></div>
+    </section>
+
+    <!-- ==================================================================
+         HISTÓRICO GERAL
+         ================================================================== -->
+    <section class="tela" id="tela-admin-historico" data-titulo="Histórico" hidden>
+      <h2 style="margin-bottom:16px;">Histórico Geral</h2>
+      <div id="lista-admin-historico"></div>
+    </section>
+
+    <!-- ==================================================================
+         RELATÓRIOS
+         ================================================================== -->
+    <section class="tela" id="tela-admin-relatorios" data-titulo="Relatórios" hidden>
+      <h2 style="margin-bottom:16px;">Relatórios</h2>
+      <div id="painel-relatorios"></div>
+    </section>
+
+    <!-- ==================================================================
+         MAIS (configurações do sistema + sair)
+         ================================================================== -->
+    <section class="tela" id="tela-admin-mais" data-titulo="Mais" hidden>
+      <h2 style="margin-bottom:16px;">Mais</h2>
+
+      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
+        <button class="botao botao-secundario botao-bloco" data-navegar="tela-admin-historico">📖 Histórico Geral</button>
+        <button class="botao botao-secundario botao-bloco" data-navegar="tela-admin-relatorios">📊 Relatórios</button>
+      </div>
+
+      <div class="card" style="margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
+        <span>Tema escuro</span>
+        <label class="interruptor">
+          <input type="checkbox" id="toggle-tema-escuro">
+          <span class="trilho"></span>
+        </label>
+      </div>
+
+      <div class="campo">
+        <label for="nova-senha-admin">Nova senha de coordenador</label>
+        <input type="password" id="nova-senha-admin" placeholder="Deixe em branco para manter">
+      </div>
+      <button class="botao botao-secundario botao-bloco" id="btn-salvar-senha" style="margin-bottom:16px;">Salvar Senha</button>
+
+      <button class="botao botao-secundario botao-bloco" id="btn-backup-exportar-admin" style="margin-bottom:24px;">Exportar Backup Completo</button>
+
+      <button class="botao botao-texto botao-bloco" id="btn-sair-admin">Sair</button>
+    </section>
+
+  </main>
+
+  <nav class="nav-inferior" id="nav-principal" hidden>
+    <button class="nav-item" data-navegar="tela-admin-dashboard"><span class="icone">📊</span>Painel</button>
+    <button class="nav-item" data-navegar="tela-admin-membros"><span class="icone">👥</span>Membros</button>
+    <button class="nav-item" data-navegar="tela-admin-igrejas"><span class="icone">⛪</span>Igrejas</button>
+    <button class="nav-item" data-navegar="tela-admin-eventos"><span class="icone">🎉</span>Eventos</button>
+    <button class="nav-item" data-navegar="tela-admin-gerar-escala"><span class="icone">✨</span>Escala</button>
+    <button class="nav-item" data-navegar="tela-admin-mais"><span class="icone">⋯</span>Mais</button>
+  </nav>
+
+  <footer class="rodape-app" id="rodape-institucional">
+    <img src="../shared/assets/logo/logo-paroquia.png" alt="" onerror="this.style.display='none'">
+    <div class="rodape-linhas">
+      <span class="rodape-linha-principal">Paróquia Nossa Senhora do Rosário</span>
+      <span>Painel do Coordenador — Escala Pastoral do Rosário</span>
+    </div>
+  </footer>
+
+</div>
+
+<div class="modal-fundo" id="modal-fundo" hidden>
+  <div class="modal-caixa" id="modal-caixa"></div>
+</div>
+
+<script src="../shared/js/config.js"></script>
+<script src="../shared/js/storage.js"></script>
+<script src="../shared/js/api.js"></script>
+<script src="../shared/js/ui.js"></script>
+<script src="js/auth.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/admin.js"></script>
+<script src="js/churches.js"></script>
+<script src="js/events.js"></script>
+<script src="js/scheduler.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

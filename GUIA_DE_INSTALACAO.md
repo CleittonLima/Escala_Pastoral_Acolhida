@@ -51,7 +51,7 @@ Este guia assume que você **nunca usou Google Apps Script**. Siga os passos na 
 
 ## PARTE 4 — Inserir a URL no projeto
 
-1. Abra o arquivo `js/config.js` do projeto (na pasta `EscalaPastoralRosario` que você baixou).
+1. Abra o arquivo `shared/js/config.js` do projeto (na pasta `EscalaPastoralRosario` que você baixou). Esse arquivo é **único e compartilhado** pelos dois apps (Membro e Coordenador) — editar aqui uma vez basta para os dois.
 2. Encontre a linha:
    ```js
    URL_API: "COLE_AQUI_A_URL_DO_APPS_SCRIPT",
@@ -66,7 +66,7 @@ Este guia assume que você **nunca usou Google Apps Script**. Siga os passos na 
 
 ## PARTE 5 — Adicionar as imagens (opcional, mas recomendado)
 
-Dentro de `assets/logo/`, adicione (com esses nomes exatos):
+Dentro de `shared/assets/logo/` (usada pelos dois apps), adicione (com esses nomes exatos):
 - `logo-pastoral.png` — logo da Pastoral da Acolhida
 - `logo-paroquia.png` — logo pequena da Paróquia (aparece no rodapé)
 - `favicon.png` — ícone 192x192 usado como ícone do app instalado
@@ -90,8 +90,12 @@ Se você não tiver essas imagens ainda, não tem problema: o sistema já foi pr
 
 **Opção mais simples (pelo navegador, sem instalar nada):**
 1. No repositório recém-criado, clique em **uploading an existing file** (ou **Add file → Upload files**).
-2. Arraste **toda a pasta** `EscalaPastoralRosario` (o conteúdo dela: `index.html`, `manifest.json`, `service-worker.js`, as pastas `css/`, `js/`, `assets/`, `appscript/`) para a área de upload.
-   - Observação: o GitHub aceita arrastar pastas inteiras direto do navegador na maioria dos casos; se não funcionar, arraste os arquivos e recrie as subpastas digitando o caminho no nome do arquivo durante o upload (ex.: `css/style.css`).
+2. Arraste **todo o conteúdo** da pasta `EscalaPastoralRosario` para a área de upload: o `index.html` da raiz e as pastas `shared/`, `membro/`, `coordenador/` e `appscript/`.
+   - O sistema agora é **dois apps separados**, que compartilham só o essencial:
+     - `shared/` — CSS, `config.js`/`storage.js`/`api.js`/`ui.js` e as imagens/logos (comuns aos dois apps).
+     - `membro/` — o app que os membros da Pastoral usam (login por telefone).
+     - `coordenador/` — o painel do coordenador (login por senha), completamente separado do app do membro.
+   - Observação: o GitHub aceita arrastar pastas inteiras direto do navegador na maioria dos casos; se não funcionar, arraste os arquivos e recrie as subpastas digitando o caminho no nome do arquivo durante o upload (ex.: `shared/css/style.css`).
 3. Escreva uma mensagem de commit, ex.: "Primeira versão do sistema".
 4. Clique em **Commit changes**.
 
@@ -105,21 +109,26 @@ Se você não tiver essas imagens ainda, não tem problema: o sistema já foi pr
 4. Clique em **Save**.
 5. Aguarde 1 a 2 minutos. Recarregue a página — aparecerá um link do tipo:
    `https://SEU-USUARIO.github.io/escala-pastoral-rosario/`
-6. Esse é o endereço público do seu sistema. Pode compartilhar com a Pastoral!
+6. Esse endereço já redireciona automaticamente para o app do Membro. Você terá dois links para compartilhar:
+   - **App do Membro** (para toda a Pastoral):
+     `https://SEU-USUARIO.github.io/escala-pastoral-rosario/membro/`
+   - **Painel do Coordenador** (só para quem coordena a escala — não fica visível/linkado para os membros, mas qualquer um com o link e a senha entra):
+     `https://SEU-USUARIO.github.io/escala-pastoral-rosario/coordenador/`
+
+   Recomendação: salve o link do coordenador nos favoritos do celular/computador de quem organiza a escala, em vez de divulgar publicamente.
 
 ---
 
 ## PARTE 9 — Testar o funcionamento completo
 
-1. Abra o link do GitHub Pages no celular ou computador.
-2. Você deve ver a splash screen, depois a tela inicial com a logo.
-3. Toque em **⚙ Configurações → Acesso Administrativo**.
-4. Senha padrão inicial: **`rosario2026`** — troque-a imediatamente em **Configurações do Sistema → Nova senha de administrador** depois do primeiro acesso.
-5. Cadastre uma Igreja (em **Igrejas**), depois um Membro (em **Membros**) usando um telefone de teste.
-6. Saia da área administrativa (**Configurações do Sistema → Sair**) e entre como membro usando o telefone cadastrado, para confirmar que o login de membro funciona.
-7. Volte como administrador, vá em **Escala → Gerar Escala Automaticamente** e confirme que o rascunho aparece.
+1. Abra o link do **Painel do Coordenador** (`.../coordenador/`) no celular ou computador.
+2. Você verá a splash screen e, em seguida, a tela de login (é a única tela pública deste app).
+3. Senha padrão inicial: **`rosario2026`** — troque-a imediatamente em **Mais → Nova senha de coordenador** depois do primeiro acesso.
+4. Cadastre uma Igreja (aba **Igrejas**), depois um Membro (aba **Membros**) usando um telefone de teste. Toque no cartão do membro para editar, e no ícone 🗑️ para testar a exclusão.
+5. Abra o link do **app do Membro** (`.../membro/`) em outra aba/dispositivo e entre com o telefone de teste cadastrado, para confirmar que o login de membro funciona de forma independente do painel do coordenador.
+6. Volte ao Painel do Coordenador, vá em **Escala → Gerar Escala Automaticamente** e confirme que o rascunho aparece.
 
-Se algo não funcionar, o erro mais comum é a **URL do Apps Script** copiada incorretamente em `js/config.js`, ou a implantação do Web App configurada como "Somente eu" em vez de "Qualquer pessoa" (Parte 3, passo 3).
+Se algo não funcionar, o erro mais comum é a **URL do Apps Script** copiada incorretamente em `shared/js/config.js`, ou a implantação do Web App configurada como "Somente eu" em vez de "Qualquer pessoa" (Parte 3, passo 3).
 
 ---
 

@@ -1,7 +1,8 @@
 /* ==========================================================================
    churches.js
-   CRUD de Igrejas (visão do Administrador): nome, padroeiro, comunidade,
+   CRUD de Igrejas (visão do Coordenador): nome, padroeiro, comunidade,
    endereço, horários e quantidade necessária de casais/jovens/adultos.
+   Cada item tem ações explícitas de Editar (✏️) e Excluir (🗑️).
    ========================================================================== */
 
 const Churches = {
@@ -23,33 +24,54 @@ const Churches = {
   _renderizarLista() {
     const container = document.getElementById("lista-admin-igrejas");
     if (this.lista.length === 0) {
-      container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Nenhuma igreja cadastrada ainda.</p>`;
+      container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Nenhuma igreja cadastrada ainda. Toque em "+ Nova" para começar.</p>`;
       return;
     }
     container.innerHTML = this.lista
       .map(
         (igreja) => `
-        <div class="card entrada-item" style="margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:start;">
-            <div>
-              <strong>${_escapar(igreja.nome)}</strong>
-              <p style="color:var(--cor-texto-secundario); font-size:var(--tamanho-sm);">${_escapar(igreja.padroeiro || "")} · ${_escapar(igreja.comunidade || "")}</p>
+        <div class="item-admin entrada-item">
+          <div class="info-principal" data-abrir-igreja="${igreja.id}">
+            <strong>${_escapar(igreja.nome)}</strong>
+            <span>${_escapar(igreja.padroeiro || "")}${igreja.padroeiro ? " · " : ""}${_escapar(igreja.comunidade || "")}</span>
+            <div class="badges-linha">
+              <span class="badge badge-info">Casais: ${igreja.qtdCasais ?? 0}</span>
+              <span class="badge badge-info">Jovens: ${igreja.qtdJovens ?? 0}</span>
+              <span class="badge badge-info">Adultos: ${igreja.qtdAdultos ?? 0}</span>
             </div>
-            <button class="botao botao-texto" data-editar-igreja="${igreja.id}">Editar</button>
           </div>
-          <p style="font-size:var(--tamanho-sm); margin-top:8px; color:var(--cor-texto-secundario);">${_escapar(igreja.endereco || "")}</p>
-          <div style="display:flex; gap:6px; margin-top:8px;">
-            <span class="badge badge-info">Casais: ${igreja.qtdCasais ?? 0}</span>
-            <span class="badge badge-info">Jovens: ${igreja.qtdJovens ?? 0}</span>
-            <span class="badge badge-info">Adultos: ${igreja.qtdAdultos ?? 0}</span>
+          <div class="acoes">
+            <button class="botao-icone icone-editar" data-editar-igreja="${igreja.id}" title="Editar" aria-label="Editar ${_escapar(igreja.nome)}">✏️</button>
+            <button class="botao-icone icone-excluir" data-excluir-igreja="${igreja.id}" title="Excluir" aria-label="Excluir ${_escapar(igreja.nome)}">🗑️</button>
           </div>
         </div>`
       )
       .join("");
 
-    container.querySelectorAll("[data-editar-igreja]").forEach((botao) => {
-      botao.addEventListener("click", () => this.abrirFormulario(botao.dataset.editarIgreja));
+    container.querySelectorAll("[data-abrir-igreja], [data-editar-igreja]").forEach((el) => {
+      el.addEventListener("click", () => this.abrirFormulario(el.dataset.abrirIgreja || el.dataset.editarIgreja));
     });
+
+    container.querySelectorAll("[data-excluir-igreja]").forEach((el) => {
+      el.addEventListener("click", (evento) => {
+        evento.stopPropagation();
+        this.excluir(el.dataset.excluirIgreja);
+      });
+    });
+  },
+
+  async excluir(idIgreja) {
+    const igreja = this.lista.find((i) => i.id === idIgreja);
+    const confirmar = confirm(`Excluir "${igreja?.nome || "esta igreja"}"? Isso não apaga o histórico já registrado.`);
+    if (!confirmar) return;
+
+    const resposta = await Api.remover("igrejas", idIgreja);
+    if (resposta.sucesso) {
+      UI.mostrarToast("Igreja excluída.");
+      this.carregar();
+    } else {
+      UI.mostrarToast(resposta.erro || "Não foi possível excluir.");
+    }
   },
 
   abrirFormulario(idIgreja = null) {

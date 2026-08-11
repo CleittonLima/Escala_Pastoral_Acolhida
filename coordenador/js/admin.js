@@ -1,12 +1,13 @@
 /* ==========================================================================
    admin.js
-   Funções exclusivas do Administrador: cadastro de membros (CRUD completo),
-   histórico geral, relatórios e configurações do sistema (senha, backup,
-   personalização de cores).
+   Funções exclusivas do Coordenador: cadastro de membros (CRUD completo
+   com editar e excluir bem visíveis), busca, histórico geral e relatórios.
+   (Senha/backup/tema ficam na tela "Mais", ligados direto em app.js.)
    ========================================================================== */
 
 const Admin = {
   membros: [],
+  filtro: "",
 
   /* ---- CADASTRO DE MEMBROS ---- */
   async carregarMembros() {
@@ -24,26 +25,63 @@ const Admin = {
 
   _renderizarMembros() {
     const container = document.getElementById("lista-admin-membros");
+    const filtro = this.filtro.trim().toLowerCase();
+    const listaFiltrada = filtro
+      ? this.membros.filter((m) => (m.nome || "").toLowerCase().includes(filtro))
+      : this.membros;
+
     if (this.membros.length === 0) {
-      container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Nenhum membro cadastrado ainda.</p>`;
+      container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Nenhum membro cadastrado ainda. Toque em "+ Novo" para cadastrar o primeiro.</p>`;
       return;
     }
-    container.innerHTML = this.membros
+    if (listaFiltrada.length === 0) {
+      container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Nenhum membro encontrado para "${_escapar(this.filtro)}".</p>`;
+      return;
+    }
+
+    container.innerHTML = listaFiltrada
       .map(
         (m) => `
-        <div class="item-escala entrada-item" data-editar-membro="${m.id}">
-          <div class="info-principal">
+        <div class="item-admin entrada-item">
+          <div class="info-principal" data-abrir-membro="${m.id}">
             <strong>${_escapar(m.nome)}</strong>
-            <span>${_escapar(m.comunidade || "")} ${m.casado === "true" || m.casado === true ? "· Casado(a)" : ""}</span>
+            <span>${_escapar(m.comunidade || "Sem comunidade")} ${m.casado === "true" || m.casado === true ? "· Casado(a)" : ""}</span>
+            <div class="badges-linha">
+              <span class="badge ${m.status === "Ativo" ? "badge-sucesso" : "badge-neutro"}">${_escapar(m.status)}</span>
+            </div>
           </div>
-          <span class="badge ${m.status === "Ativo" ? "badge-sucesso" : "badge-neutro"}">${_escapar(m.status)}</span>
+          <div class="acoes">
+            <button class="botao-icone icone-editar" data-editar-membro="${m.id}" title="Editar" aria-label="Editar ${_escapar(m.nome)}">✏️</button>
+            <button class="botao-icone icone-excluir" data-excluir-membro="${m.id}" title="Excluir" aria-label="Excluir ${_escapar(m.nome)}">🗑️</button>
+          </div>
         </div>`
       )
       .join("");
 
-    container.querySelectorAll("[data-editar-membro]").forEach((el) => {
-      el.addEventListener("click", () => this.abrirFormularioMembro(el.dataset.editarMembro));
+    container.querySelectorAll("[data-abrir-membro], [data-editar-membro]").forEach((el) => {
+      el.addEventListener("click", () => this.abrirFormularioMembro(el.dataset.abrirMembro || el.dataset.editarMembro));
     });
+
+    container.querySelectorAll("[data-excluir-membro]").forEach((el) => {
+      el.addEventListener("click", (evento) => {
+        evento.stopPropagation();
+        this.excluirMembro(el.dataset.excluirMembro);
+      });
+    });
+  },
+
+  async excluirMembro(idMembro) {
+    const membro = this.membros.find((m) => m.id === idMembro);
+    const confirmar = confirm(`Excluir "${membro?.nome || "este membro"}"? O histórico dele será mantido, mas ele deixará de aparecer nas escalas futuras.`);
+    if (!confirmar) return;
+
+    const resposta = await Api.remover("membros", idMembro);
+    if (resposta.sucesso) {
+      UI.mostrarToast("Membro excluído.");
+      this.carregarMembros();
+    } else {
+      UI.mostrarToast(resposta.erro || "Não foi possível excluir.");
+    }
   },
 
   abrirFormularioMembro(idMembro = null) {
@@ -96,7 +134,9 @@ const Admin = {
           </select>
         </div>
 
-        <button type="submit" class="botao botao-primario botao-bloco">Salvar</button>
+        <div style="display:flex; gap:10px;">
+          <button type="submit" class="botao botao-primario botao-bloco">Salvar</button>
+        </div>
       </form>
     `;
     UI.abrirModal(html);
@@ -161,7 +201,7 @@ const Admin = {
         <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
           ${(r.participacaoPorMembro || [])
             .map((p) => `<span style="font-size:var(--tamanho-sm);">${_escapar(p.nome)}: ${p.total} escalas</span>`)
-            .join("")}
+            .join("") || `<span style="color:var(--cor-texto-secundario); font-size:var(--tamanho-sm);">Sem dados ainda.</span>`}
         </div>
       </div>
       <div class="card">
@@ -171,32 +211,7 @@ const Admin = {
     `;
   },
 
-  /* ---- CONFIGURAÇÕES DO SISTEMA ---- */
-  async carregarConfigAdmin() {
-    document.getElementById("painel-config-admin").innerHTML = `
-      <div class="campo">
-        <label>Nova senha de administrador</label>
-        <input type="password" id="nova-senha-admin" placeholder="Deixe em branco para manter">
-      </div>
-      <button class="botao botao-primario botao-bloco" id="btn-salvar-senha" style="margin-bottom:20px;">Salvar Senha</button>
-
-      <button class="botao botao-secundario botao-bloco" id="btn-backup-exportar-admin" style="margin-bottom:12px;">Exportar Backup Completo</button>
-      <button class="botao botao-secundario botao-bloco" id="btn-backup-importar-admin" style="margin-bottom:20px;">Importar Backup</button>
-
-      <button class="botao botao-texto botao-bloco" id="btn-sair-admin">Sair</button>
-    `;
-
-    document.getElementById("btn-salvar-senha").addEventListener("click", async () => {
-      const novaSenha = document.getElementById("nova-senha-admin").value;
-      if (!novaSenha) return UI.mostrarToast("Digite a nova senha.");
-      const resposta = await Api.atualizar("configuracoes", { novaSenhaAdmin: novaSenha });
-      UI.mostrarToast(resposta.sucesso ? "Senha atualizada!" : resposta.erro);
-    });
-
-    document.getElementById("btn-backup-exportar-admin").addEventListener("click", () => Admin.exportarBackup());
-    document.getElementById("btn-sair-admin").addEventListener("click", () => Auth.sair());
-  },
-
+  /* ---- BACKUP ---- */
   async exportarBackup() {
     const resposta = await Api.buscar("configuracoes", { exportarBackup: true });
     if (!resposta.sucesso) return UI.mostrarToast(resposta.erro || "Erro ao exportar.");
@@ -212,3 +227,8 @@ const Admin = {
 };
 
 document.getElementById("btn-novo-membro")?.addEventListener("click", () => Admin.abrirFormularioMembro());
+
+document.getElementById("busca-membros")?.addEventListener("input", (evento) => {
+  Admin.filtro = evento.target.value;
+  Admin._renderizarMembros();
+});

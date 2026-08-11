@@ -146,6 +146,47 @@
   background: rgba(46,125,91,0.08);
 }
 
+/* ---- Item administrável (membros/igrejas/eventos) com ações visíveis ---- */
+.item-admin {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  padding: var(--espaco-3);
+  border-radius: var(--raio-md);
+  background: var(--cor-card);
+  border: 1px solid var(--cor-borda);
+  margin-bottom: var(--espaco-3);
+  transition: box-shadow var(--transicao-rapida);
+}
+.item-admin:hover { box-shadow: var(--sombra-card-hover); }
+.item-admin .info-principal { flex: 1; min-width: 0; cursor: pointer; }
+.item-admin .info-principal strong { display: block; font-size: var(--tamanho-md); }
+.item-admin .info-principal span { color: var(--cor-texto-secundario); font-size: var(--tamanho-sm); }
+.item-admin .badges-linha { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+
+.item-admin .acoes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+.botao-icone {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--raio-sm);
+  border: none;
+  background: var(--cor-fundo);
+  color: var(--cor-texto-secundario);
+  font-size: 1.05rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transicao-rapida), color var(--transicao-rapida);
+}
+.botao-icone:hover { background: var(--cor-borda); }
+.botao-icone.icone-editar:hover { color: var(--cor-primaria); }
+.botao-icone.icone-excluir:hover { color: var(--cor-alerta); background: rgba(178,59,59,0.12); }
+
 /* ---- Interruptor (toggle) ---- */
 .interruptor { position: relative; width: 46px; height: 26px; flex-shrink: 0; }
 .interruptor input { opacity: 0; width: 0; height: 0; }

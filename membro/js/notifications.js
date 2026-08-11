@@ -8,9 +8,8 @@ const Notifications = {
   itens: [],
 
   async carregar() {
-    if (!Auth.membroLogado && Auth.sessaoAtiva !== "admin") return;
-    const destinatario = Auth.sessaoAtiva === "membro" ? Auth.membroLogado.id : "todos";
-    const resposta = await Api.buscar("notificacoes", { destinatario });
+    if (!Auth.membroLogado) return;
+    const resposta = await Api.buscar("notificacoes", { destinatario: Auth.membroLogado.id });
 
     if (resposta.sucesso) {
       this.itens = resposta.dados || [];

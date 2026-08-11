@@ -1,7 +1,7 @@
 /* ==========================================================================
    events.js
-   CRUD de Eventos extraordinários (Novena, Padroeiro, Terço das Crianças,
-   RCC, Retiro, Missão, Celebrações, etc.) — visão do Administrador.
+   CRUD de Eventos extraordinários (visão do Coordenador). Cada item tem
+   ações explícitas de Editar (✏️) e Excluir (🗑️).
    ========================================================================== */
 
 const Events = {
@@ -23,32 +23,54 @@ const Events = {
   _renderizarLista() {
     const container = document.getElementById("lista-admin-eventos");
     if (this.lista.length === 0) {
-      container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Nenhum evento cadastrado ainda.</p>`;
+      container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Nenhum evento cadastrado ainda. Toque em "+ Novo" para começar.</p>`;
       return;
     }
     container.innerHTML = this.lista
       .map(
         (ev) => `
-        <div class="card entrada-item" style="margin-bottom:12px;">
-          <div style="display:flex; justify-content:space-between; align-items:start;">
-            <div>
-              <strong>${_escapar(ev.nome)}</strong>
-              <p style="color:var(--cor-texto-secundario); font-size:var(--tamanho-sm);">${_escapar(ev.data)} às ${_escapar(ev.hora)} · ${_escapar(ev.local)}</p>
+        <div class="item-admin entrada-item">
+          <div class="info-principal" data-abrir-evento="${ev.id}">
+            <strong>${_escapar(ev.nome)}</strong>
+            <span>${_escapar(ev.data)} às ${_escapar(ev.hora)} · ${_escapar(ev.local)}</span>
+            <div class="badges-linha">
+              <span class="badge badge-info">Casais: ${ev.qtdCasais ?? 0}</span>
+              <span class="badge badge-info">Jovens: ${ev.qtdJovens ?? 0}</span>
+              <span class="badge badge-info">Adultos: ${ev.qtdAdultos ?? 0}</span>
             </div>
-            <button class="botao botao-texto" data-editar-evento="${ev.id}">Editar</button>
           </div>
-          <div style="display:flex; gap:6px; margin-top:8px;">
-            <span class="badge badge-info">Casais: ${ev.qtdCasais ?? 0}</span>
-            <span class="badge badge-info">Jovens: ${ev.qtdJovens ?? 0}</span>
-            <span class="badge badge-info">Adultos: ${ev.qtdAdultos ?? 0}</span>
+          <div class="acoes">
+            <button class="botao-icone icone-editar" data-editar-evento="${ev.id}" title="Editar" aria-label="Editar ${_escapar(ev.nome)}">✏️</button>
+            <button class="botao-icone icone-excluir" data-excluir-evento="${ev.id}" title="Excluir" aria-label="Excluir ${_escapar(ev.nome)}">🗑️</button>
           </div>
         </div>`
       )
       .join("");
 
-    container.querySelectorAll("[data-editar-evento]").forEach((botao) => {
-      botao.addEventListener("click", () => this.abrirFormulario(botao.dataset.editarEvento));
+    container.querySelectorAll("[data-abrir-evento], [data-editar-evento]").forEach((el) => {
+      el.addEventListener("click", () => this.abrirFormulario(el.dataset.abrirEvento || el.dataset.editarEvento));
     });
+
+    container.querySelectorAll("[data-excluir-evento]").forEach((el) => {
+      el.addEventListener("click", (evento) => {
+        evento.stopPropagation();
+        this.excluir(el.dataset.excluirEvento);
+      });
+    });
+  },
+
+  async excluir(idEvento) {
+    const evento = this.lista.find((e) => e.id === idEvento);
+    const confirmar = confirm(`Excluir "${evento?.nome || "este evento"}"?`);
+    if (!confirmar) return;
+
+    const resposta = await Api.remover("eventos", idEvento);
+    if (resposta.sucesso) {
+      UI.mostrarToast("Evento excluído.");
+      this.carregar();
+    } else {
+      UI.mostrarToast(resposta.erro || "Não foi possível excluir.");
+    }
   },
 
   abrirFormulario(idEvento = null) {
@@ -82,7 +104,6 @@ const Events = {
       if (resposta.sucesso) {
         UI.fecharModal();
         UI.mostrarToast("Evento salvo!");
-        // Notifica os membros sobre o novo evento cadastrado.
         if (!idEvento) Api.criar("notificacoes", { destinatario: "todos", tipo: "Novo evento", mensagem: `Novo evento cadastrado: ${dados.nome}` });
         this.carregar();
       } else {

@@ -1,0 +1,16 @@
+{
+  "name": "Escala Pastoral do Rosário — Coordenador",
+  "short_name": "Coordenador",
+  "description": "Painel do Coordenador — Pastoral da Acolhida, Paróquia Nossa Senhora do Rosário",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F7F1E8",
+  "theme_color": "#40101D",
+  "lang": "pt-BR",
+  "icons": [
+    { "src": "../shared/assets/logo/favicon.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "../shared/assets/logo/splash-icon.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}
