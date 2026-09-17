@@ -33,7 +33,7 @@ async function iniciar() {
   _ligarConfiguracoes();
 
   const inicioSplash = Date.now();
-  const sessaoRestaurada = Auth.restaurarSessao();
+  const sessaoRestaurada = await Auth.restaurarSessao();
 
   const tempoDecorrido = Date.now() - inicioSplash;
   const tempoRestante = Math.max(0, CONFIG.DURACAO_SPLASH_MS - tempoDecorrido);

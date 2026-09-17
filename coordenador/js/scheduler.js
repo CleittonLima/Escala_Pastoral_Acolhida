@@ -237,7 +237,7 @@ const Scheduler = {
           : ""}
         ${casais.length ? `<strong style="font-size:var(--tamanho-sm);">Casais</strong>${casais.map((c) => `<button class="botao botao-secundario botao-bloco" data-escolher-membro="${c.ids}" data-nome="${_escapar(c.nome)}">${_escapar(c.nome)} ✓</button>`).join("")}` : ""}
         <strong style="font-size:var(--tamanho-sm); margin-top:8px;">Membros solteiros</strong>
-        ${solteiros.map((m) => vaga.funcao === "Casal" ? `<label class="botao botao-texto" style="text-align:left;"><input type="checkbox" data-jovem-troca="${m.id}" data-nome="${_escapar(m.nome)}" data-sexo="${m.sexo || ""}"> ${_escapar(m.nome)} (${_escapar(m.categoriaServico || "Adulto")})</label>` : `<button class="botao botao-secundario botao-bloco" data-escolher-membro="${m.id}" data-nome="${_escapar(m.nome)}">${_escapar(m.nome)} ✓</button>`).join("")}
+        ${solteiros.map((m) => vaga.funcao === "Casal" ? `<label class="botao botao-texto" style="text-align:left;"><input type="checkbox" data-jovem-troca="${m.id}" data-nome="${_escapar(m.nome)}" data-sexo="${m.sexo || ""}"> ${_escapar(m.nome)} (Jovem)</label>` : `<button class="botao botao-secundario botao-bloco" data-escolher-membro="${m.id}" data-nome="${_escapar(m.nome)}">${_escapar(m.nome)} ✓</button>`).join("")}
         ${vaga.funcao === "Casal" ? `<button class="botao botao-primario botao-bloco" id="btn-confirmar-dois-jovens">Usar os 2 jovens selecionados</button>` : ""}
       </div>
     `;

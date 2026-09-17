@@ -177,8 +177,7 @@ function _montarUnidadesElegiveis(candidatos) {
       return;
     }
     if (m.casado === true || m.casado === "true") return; // casado sem vínculo não ocupa vaga de casal sozinho
-    const tipo = m.categoriaServico || ((m.participaDe || "").indexOf("EJC") !== -1 ? "Jovem" : "Adulto");
-    unidades.push({ tipo, membros: [m], disponibilidades: [c.disponibilidade] });
+    unidades.push({ tipo: "Jovem", membros: [m], disponibilidades: [c.disponibilidade] });
   });
   return unidades;
 }
@@ -230,12 +229,12 @@ function _montarVagasDoMes(igrejas, eventosDoMes, mesReferencia) {
   const datasDoMes = _datasDoMesPorDiaSemana(mesReferencia);
 
   igrejas.forEach((igreja) => {
-    const diaChavesAtivos = _parsearDiasIgreja(igreja.horarios || "");
+    const diaChavesAtivos = _celebracoesDaIgreja(igreja);
 
-    diaChavesAtivos.forEach(({ diaChave, horarioTexto }) => {
+    diaChavesAtivos.forEach(({ diaChave, horarioTexto, qtdCasais, qtdJovens }) => {
       const datas = datasDoMes[diaChave] || [];
       datas.forEach((data) => {
-        _funcoesPorQuantidade(igreja).forEach((funcao) => {
+        _funcoesPorQuantidade({ qtdCasais, qtdJovens }).forEach((funcao) => {
           vagas.push({
             igrejaId:      igreja.id,
             igrejaNome:    igreja.nome,
@@ -256,7 +255,6 @@ function _montarVagasDoMes(igrejas, eventosDoMes, mesReferencia) {
     [
       ...Array(Number(evento.qtdCasais)  || 0).fill("Casal"),
       ...Array(Number(evento.qtdJovens)  || 0).fill("Jovem"),
-      ...Array(Number(evento.qtdAdultos) || 0).fill("Adulto"),
     ].forEach((funcao) => {
       vagas.push({
         igrejaId:      igreja.id || "",
@@ -301,11 +299,28 @@ function _parsearDiasIgreja(horarioStr) {
   return resultado;
 }
 
+/** Agenda estruturada do painel: dia da semana e hora não dependem de texto livre. */
+function _celebracoesDaIgreja(igreja) {
+  try {
+    const agenda = JSON.parse(igreja.celebracoes || "[]");
+    if (Array.isArray(agenda) && agenda.length) {
+      return agenda.map((c) => ({
+        diaChave: c.diaChave,
+        horarioTexto: c.horario,
+        qtdCasais: Number(c.qtdCasais) || 0,
+        qtdJovens: Number(c.qtdJovens) || 0,
+      })).filter((c) => c.diaChave && c.horario);
+    }
+  } catch (e) { /* tenta formato legado abaixo */ }
+  return _parsearDiasIgreja(igreja.horarios || "").map((c) => ({
+    ...c, qtdCasais: Number(igreja.qtdCasais) || 0, qtdJovens: Number(igreja.qtdJovens) || 0,
+  }));
+}
+
 function _funcoesPorQuantidade(igreja) {
   return [
     ...Array(Number(igreja.qtdCasais)  || 0).fill("Casal"),
     ...Array(Number(igreja.qtdJovens)  || 0).fill("Jovem"),
-    ...Array(Number(igreja.qtdAdultos) || 0).fill("Adulto"),
   ];
 }
 

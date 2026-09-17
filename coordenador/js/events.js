@@ -36,7 +36,6 @@ const Events = {
             <div class="badges-linha">
               <span class="badge badge-info">Casais: ${ev.qtdCasais ?? 0}</span>
               <span class="badge badge-info">Jovens: ${ev.qtdJovens ?? 0}</span>
-              <span class="badge badge-info">Adultos: ${ev.qtdAdultos ?? 0}</span>
             </div>
           </div>
           <div class="acoes">
@@ -84,10 +83,9 @@ const Events = {
           <div class="campo"><label>Hora</label><input type="time" name="hora" required value="${_escapar(evento.hora)}"></div>
         </div>
         <div class="campo"><label>Local</label><input name="local" required value="${_escapar(evento.local)}"></div>
-        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
           <div class="campo"><label>Casais</label><input type="number" min="0" name="qtdCasais" value="${evento.qtdCasais ?? 0}"></div>
           <div class="campo"><label>Jovens</label><input type="number" min="0" name="qtdJovens" value="${evento.qtdJovens ?? 0}"></div>
-          <div class="campo"><label>Adultos</label><input type="number" min="0" name="qtdAdultos" value="${evento.qtdAdultos ?? 0}"></div>
         </div>
         <div class="campo"><label>Observações</label><textarea name="observacoes" rows="2">${_escapar(evento.observacoes)}</textarea></div>
         <button type="submit" class="botao botao-primario botao-bloco">Salvar</button>

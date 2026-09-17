@@ -1,7 +1,7 @@
 /**
  * Churches.gs
  * CRUD de IGREJAS: nome, padroeiro, comunidade, endereço, horários e
- * quantidade necessária de casais/jovens/adultos por vaga.
+ * quantidade necessária de casais e jovens por celebração.
  */
 
 function obterIgrejas(parametros) {
@@ -21,11 +21,11 @@ function criarIgreja(dados) {
     padroeiro: dados.padroeiro || "",
     comunidade: dados.comunidade || "",
     endereco: dados.endereco || "",
-    horarios: dados.horarios || "",
+    celebracoes: dados.celebracoes || "[]",
+    horarios: dados.horarios || "", // compatibilidade com igrejas antigas; será migrado pela tela de edição
     minutosChegada: Number(dados.minutosChegada) || 30,
     qtdCasais: Number(dados.qtdCasais) || 0,
     qtdJovens: Number(dados.qtdJovens) || 0,
-    qtdAdultos: Number(dados.qtdAdultos) || 0,
     observacoes: dados.observacoes || "",
   };
   inserirLinha("IGREJAS", igreja);
@@ -36,7 +36,6 @@ function atualizarIgreja(dados) {
   if (!dados.id) return respostaErro("ID da igreja não informado.");
   dados.qtdCasais = Number(dados.qtdCasais) || 0;
   dados.qtdJovens = Number(dados.qtdJovens) || 0;
-  dados.qtdAdultos = Number(dados.qtdAdultos) || 0;
   if (dados.minutosChegada !== undefined) dados.minutosChegada = Number(dados.minutosChegada) || 0;
   const encontrada = atualizarLinhaPorId("IGREJAS", dados);
   return encontrada ? respostaSucesso(dados) : respostaErro("Igreja não encontrada.");

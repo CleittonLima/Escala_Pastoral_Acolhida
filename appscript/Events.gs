@@ -23,7 +23,6 @@ function criarEvento(dados) {
     local: dados.local || "",
     qtdCasais: Number(dados.qtdCasais) || 0,
     qtdJovens: Number(dados.qtdJovens) || 0,
-    qtdAdultos: Number(dados.qtdAdultos) || 0,
     observacoes: dados.observacoes || "",
   };
   inserirLinha("EVENTOS", evento);
@@ -34,7 +33,6 @@ function atualizarEvento(dados) {
   if (!dados.id) return respostaErro("ID do evento não informado.");
   dados.qtdCasais = Number(dados.qtdCasais) || 0;
   dados.qtdJovens = Number(dados.qtdJovens) || 0;
-  dados.qtdAdultos = Number(dados.qtdAdultos) || 0;
   const encontrado = atualizarLinhaPorId("EVENTOS", dados);
   return encontrado ? respostaSucesso(dados) : respostaErro("Evento não encontrado.");
 }

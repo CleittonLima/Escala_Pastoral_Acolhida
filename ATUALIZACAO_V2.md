@@ -1,5 +1,12 @@
 # Atualização V2 — Casais, escala e troca
 
+## Complemento V2.1
+
+- A escala agora trabalha somente com **casais** e **jovens**; a categoria adulto foi removida.
+- Igrejas usam uma agenda de celebrações estruturada (dia da semana, hora, casais e jovens), em vez de um campo de texto de horário.
+- Quem ainda não preencheu disponibilidade começa disponível e pode desmarcar os horários no app; isso evita rascunhos vazios em cadastros novos.
+- A sessão do coordenador é validada no servidor antes de abrir o painel.
+
 ## O que foi alterado
 
 - Cadastro de membro agora inclui apelido, sexo, categoria na escala, pastorais em múltipla escolha, igreja e horários preferidos.

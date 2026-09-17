@@ -8,9 +8,14 @@ const Auth = {
   sessaoAtiva: false,
 
   /** Restaura sessão salva se o token ainda existir. */
-  restaurarSessao() {
-    this.sessaoAtiva = Storage.obter(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN) === "ativa"
-                    && !!Storage.obter(CONFIG.CHAVES_LOCAL.TOKEN_COORD);
+  async restaurarSessao() {
+    const temSessaoLocal = Storage.obter(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN) === "ativa"
+      && !!Storage.obter(CONFIG.CHAVES_LOCAL.TOKEN_COORD);
+    if (!temSessaoLocal) return false;
+    // Não confia apenas no localStorage: o token pode ter expirado no servidor.
+    const resposta = await Api.buscar("dashboard");
+    this.sessaoAtiva = !!resposta.sucesso;
+    if (!this.sessaoAtiva) Api.logoutCoordenador();
     return this.sessaoAtiva;
   },
 
@@ -52,6 +57,7 @@ document.getElementById("form-login-admin")?.addEventListener("submit", async (e
   }
 
   await App.abrirPainelAdmin();
+  document.getElementById("senha-admin").value = "";
 });
 
 document.getElementById("btn-sair-admin")?.addEventListener("click", () => Auth.sair());

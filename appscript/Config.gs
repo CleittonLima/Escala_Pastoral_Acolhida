@@ -17,11 +17,11 @@ const CABECALHOS_ABAS = {
     "data", "horario", "funcao", "membroId", "membroNome", "grupoId", "tipoUnidade", "status", "dataPublicacao",
   ],
   EVENTOS: [
-    "id", "nome", "data", "hora", "local", "qtdCasais", "qtdJovens", "qtdAdultos", "observacoes",
+    "id", "nome", "data", "hora", "local", "qtdCasais", "qtdJovens", "observacoes",
   ],
   IGREJAS: [
-    "id", "nome", "padroeiro", "comunidade", "endereco", "horarios", "minutosChegada",
-    "qtdCasais", "qtdJovens", "qtdAdultos", "observacoes",
+    "id", "nome", "padroeiro", "comunidade", "endereco", "celebracoes", "horarios", "minutosChegada",
+    "qtdCasais", "qtdJovens", "observacoes",
   ],
   HISTORICO: [
     "id", "membroId", "membroNome", "data", "local", "evento", "horario", "funcao", "presenca",

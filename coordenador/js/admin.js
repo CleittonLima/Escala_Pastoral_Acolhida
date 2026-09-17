@@ -126,7 +126,7 @@ const Admin = {
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
           <div class="campo"><label>Sexo</label><select name="sexo" required><option value="">Selecione</option><option value="Masculino" ${m.sexo === "Masculino" ? "selected" : ""}>Masculino</option><option value="Feminino" ${m.sexo === "Feminino" ? "selected" : ""}>Feminino</option></select></div>
-          <div class="campo"><label>Categoria na escala</label><select name="categoriaServico"><option value="Jovem" ${m.categoriaServico === "Jovem" ? "selected" : ""}>Jovem solteiro(a)</option><option value="Adulto" ${m.categoriaServico === "Adulto" ? "selected" : ""}>Adulto solteiro(a)</option><option value="Casado" ${m.categoriaServico === "Casado" ? "selected" : ""}>Casado(a)</option></select></div>
+          <div class="campo"><label>Categoria na escala</label><select name="categoriaServico"><option value="Jovem" ${m.categoriaServico !== "Casado" ? "selected" : ""}>Jovem solteiro(a)</option><option value="Casado" ${m.categoriaServico === "Casado" ? "selected" : ""}>Casado(a)</option></select></div>
         </div>
 
         <div class="campo">

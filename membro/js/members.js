@@ -59,7 +59,8 @@ const Members = {
       mesReferencia,
     });
 
-    const dadosSalvos = resposta.sucesso && resposta.dados ? resposta.dados : {};
+    const dadosSalvos = resposta.sucesso && resposta.dados && Object.keys(resposta.dados).length
+      ? resposta.dados : { quinta: true, sabado: true, domingoManha: true, domingoNoite: true };
     this.disponibilidadeAtual = { ...dadosSalvos };
 
     const congelada = dadosSalvos.congelada === true;

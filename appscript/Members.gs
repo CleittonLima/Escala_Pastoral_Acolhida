@@ -142,7 +142,7 @@ function _vincularParceiros(idMembro, idParceiro) {
 
 function _categoriaPadrao(dados) {
   if (dados.casado === true || dados.casado === "true") return "Casado";
-  return (dados.participaDe || "").indexOf("EJC") !== -1 ? "Jovem" : "Adulto";
+  return "Jovem";
 }
 
 function removerMembro(id) {
@@ -219,7 +219,11 @@ function _membrosDisponiveis(mesReferencia) {
   return membros
     .map((membro) => {
       const disponibilidade = disponibilidades.find((d) => d.membroId === membro.id);
-      return disponibilidade ? { membro, disponibilidade } : null;
+      // Quem ainda não abriu a tela de disponibilidade começa disponível; ao salvar,
+      // o membro pode desmarcar os horários em que não consegue servir.
+      return { membro, disponibilidade: disponibilidade || {
+        quinta: true, sabado: true, domingoManha: true, domingoNoite: true,
+      }};
     })
     .filter(Boolean);
 }

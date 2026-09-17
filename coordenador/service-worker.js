@@ -4,7 +4,7 @@
    via Apps Script) nunca são cacheados — sempre buscados em rede.
    ========================================================================== */
 
-const CACHE_NOME = "escala-rosario-coordenador-v3";
+const CACHE_NOME = "escala-rosario-coordenador-v4";
 
 const ARQUIVOS_APP_SHELL = [
   "./",
