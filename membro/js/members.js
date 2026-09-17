@@ -1,12 +1,13 @@
 /* ==========================================================================
    members.js
    Lógica da ÁREA DO MEMBRO: carregar próximas escalas, listar escalas
-   pessoais, preencher disponibilidade mensal e ver histórico pessoal.
-   (O CADASTRO de membros pelo admin fica em admin.js.)
+   pessoais, preencher disponibilidade mensal (com salvamento automático),
+   ver histórico pessoal e editar o próprio perfil (nome/apelido).
    ========================================================================== */
 
 const Members = {
   disponibilidadeAtual: {},
+  _salvarDisponibilidadeComAtraso: null,
 
   /** Carrega os dados do painel inicial do membro (próxima escala). */
   async carregarPainelMembro() {
@@ -43,11 +44,15 @@ const Members = {
     container.innerHTML = resposta.dados.map((e, i) => _htmlItemEscala(e, i)).join("");
   },
 
-  /** Carrega a tela de disponibilidade mensal (chips + observações). */
+  /* ---- Disponibilidade mensal (com salvamento automático) ---- */
+
   async carregarDisponibilidade() {
     const mesReferencia = _mesReferenciaAtual();
     document.getElementById("periodo-disponibilidade").textContent =
       `Referente a ${_nomeMes(mesReferencia)} — preencha até o dia 20`;
+
+    const container = document.getElementById("lista-disponibilidade");
+    container.innerHTML = `<p style="color:var(--cor-texto-secundario);">Carregando...</p>`;
 
     const resposta = await Api.buscar("disponibilidade", {
       membroId: Auth.membroLogado.id,
@@ -58,7 +63,6 @@ const Members = {
     this.disponibilidadeAtual = { ...dadosSalvos };
 
     const congelada = dadosSalvos.congelada === true;
-    const container = document.getElementById("lista-disponibilidade");
 
     container.innerHTML = CONFIG.DIAS_DISPONIBILIDADE.map((dia) => {
       const selecionado = dadosSalvos[dia.chave] === true;
@@ -75,7 +79,9 @@ const Members = {
 
     document.getElementById("obs-mes").value = dadosSalvos.observacoesMes || "";
     document.getElementById("obs-mes").disabled = congelada;
-    document.getElementById("btn-salvar-disponibilidade").hidden = congelada;
+
+    const status = document.getElementById("disponibilidade-status");
+    if (status) status.textContent = "";
 
     if (congelada) {
       container.insertAdjacentHTML(
@@ -84,11 +90,11 @@ const Members = {
            A escala deste mês já foi publicada — alterações valem a partir do próximo mês.
          </p>`
       );
+      return;
     }
 
     container.querySelectorAll(".chip-disponibilidade").forEach((chip) => {
       chip.addEventListener("click", (evento) => {
-        if (congelada) return;
         if (evento.target.matches("input")) return; // o próprio checkbox já dispara
         const checkbox = chip.querySelector("input");
         checkbox.checked = !checkbox.checked;
@@ -101,11 +107,20 @@ const Members = {
         const chave = evento.target.dataset.toggleDia;
         this.disponibilidadeAtual[chave] = evento.target.checked;
         evento.target.closest(".chip-disponibilidade").classList.toggle("selecionado", evento.target.checked);
+        // Salva na hora — cada toque já fica gravado, mesmo que o app
+        // seja fechado ou recarregue antes de você mexer em outra coisa.
+        this.salvarDisponibilidade({ silencioso: true });
       });
     });
   },
 
-  async salvarDisponibilidade() {
+  /**
+   * Salva a disponibilidade. Por padrão mostra um toast; passe
+   * `{silencioso:true}` para salvar em segundo plano (autosave), só
+   * atualizando um textinho discreto de status.
+   */
+  async salvarDisponibilidade(opcoes = {}) {
+    const { silencioso = false } = opcoes;
     const mesReferencia = _mesReferenciaAtual();
     const dados = {
       membroId: Auth.membroLogado.id,
@@ -114,18 +129,19 @@ const Members = {
       ...this.disponibilidadeAtual,
     };
 
-    const botao = document.getElementById("btn-salvar-disponibilidade");
-    botao.disabled = true;
-    botao.textContent = "Salvando...";
+    const status = document.getElementById("disponibilidade-status");
+    if (silencioso && status) status.textContent = "Salvando...";
 
     const resposta = await Api.atualizar("disponibilidade", dados);
 
-    botao.disabled = false;
-    botao.textContent = "Salvar Disponibilidade";
-
     if (resposta.sucesso) {
-      UI.mostrarToast("Disponibilidade salva!");
-    } else {
+      if (silencioso && status) {
+        const agora = new Date();
+        status.textContent = `Salvo automaticamente às ${String(agora.getHours()).padStart(2, "0")}:${String(agora.getMinutes()).padStart(2, "0")}`;
+      } else if (!silencioso) {
+        UI.mostrarToast("Disponibilidade salva!");
+      }
+    } else if (!silencioso) {
       UI.mostrarToast(resposta.erro || "Não foi possível salvar.");
     }
   },
@@ -153,6 +169,49 @@ const Members = {
       )
       .join("");
   },
+
+  /* ---- Perfil (nome / apelido) ---- */
+
+  async carregarPerfil() {
+    document.getElementById("ajustes-nome").value = Auth.membroLogado.nome || "";
+    document.getElementById("ajustes-apelido").value = Auth.membroLogado.apelido || "";
+    const selectIgreja = document.getElementById("ajustes-preferencia-igreja");
+    const resIgrejas = await Api.buscar("igrejas");
+    const igrejas = resIgrejas.sucesso ? resIgrejas.dados || [] : [];
+    const preferida = Auth.membroLogado.preferenciaIgreja || "Sem preferência";
+    selectIgreja.innerHTML = `<option value="Sem preferência">Sem preferência</option>` + igrejas.map((i) =>
+      `<option value="${_escapar(i.nome)}" ${i.nome === preferida ? "selected" : ""}>${_escapar(i.nome)}</option>`).join("");
+    const horarios = (Auth.membroLogado.preferenciaHorarios || "").split(",");
+    document.getElementById("ajustes-preferencia-horarios").innerHTML = CONFIG.DIAS_DISPONIBILIDADE.map((d) =>
+      `<label style="display:flex;gap:5px;align-items:center;font-weight:400;"><input type="checkbox" name="ajuste-horario" value="${d.chave}" ${horarios.includes(d.chave) ? "checked" : ""}> ${d.rotulo}</label>`).join("");
+  },
+
+  async salvarPerfil() {
+    const nome = document.getElementById("ajustes-nome").value.trim();
+    const apelido = document.getElementById("ajustes-apelido").value.trim();
+    const preferenciaIgreja = document.getElementById("ajustes-preferencia-igreja").value;
+    const preferenciaHorarios = Array.from(document.querySelectorAll('input[name="ajuste-horario"]:checked')).map((x) => x.value).join(",");
+    if (!nome) return UI.mostrarToast("O nome não pode ficar vazio.");
+
+    const botao = document.getElementById("btn-salvar-perfil");
+    botao.disabled = true;
+    botao.textContent = "Salvando...";
+
+    const resposta = await Api.atualizar("membros", { id: Auth.membroLogado.id, nome, apelido, preferenciaIgreja, preferenciaHorarios });
+
+    botao.disabled = false;
+    botao.textContent = "Salvar Perfil";
+
+    if (resposta.sucesso) {
+      Auth.membroLogado.nome = nome;
+      Auth.membroLogado.apelido = apelido;
+      Auth.membroLogado.preferenciaIgreja = preferenciaIgreja;
+      Auth.membroLogado.preferenciaHorarios = preferenciaHorarios;
+      UI.mostrarToast("Perfil atualizado!");
+    } else {
+      UI.mostrarToast(resposta.erro || "Não foi possível salvar.");
+    }
+  },
 };
 
 function _htmlItemEscala(escala, indice = 0) {
@@ -174,15 +233,7 @@ function _htmlItemEscala(escala, indice = 0) {
     </div>`;
 }
 
-function _mesReferenciaAtual() {
-  const agora = new Date();
-  return `${agora.getFullYear()}-${String(agora.getMonth() + 1).padStart(2, "0")}`;
-}
-
-function _nomeMes(mesReferencia) {
-  const nomes = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
-  const [ano, mes] = mesReferencia.split("-");
-  return `${nomes[parseInt(mes, 10) - 1]} de ${ano}`;
-}
-
-document.getElementById("btn-salvar-disponibilidade")?.addEventListener("click", () => Members.salvarDisponibilidade());
+document.getElementById("obs-mes")?.addEventListener(
+  "input",
+  debounce(() => Members.salvarDisponibilidade({ silencioso: true }), 900)
+);

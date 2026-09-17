@@ -16,8 +16,10 @@
 <link rel="stylesheet" href="../shared/css/components.css">
 <link rel="stylesheet" href="../shared/css/responsive.css">
 <link rel="stylesheet" href="../shared/css/animations.css">
+<link rel="stylesheet" href="../shared/css/print.css">
+<link rel="stylesheet" href="../shared/css/coordenador.css">
 </head>
-<body data-cor-personalizada>
+<body class="coordenador">
 
 <div id="splash-screen">
   <img class="splash-logo" src="../shared/assets/logo/logo-pastoral.png" alt="Logo da Pastoral da Acolhida"
@@ -31,10 +33,28 @@
   </div>
 </div>
 
+<!-- Menu lateral: fixo no desktop, gaveta deslizante no celular -->
+<nav class="sidebar" id="sidebar" hidden>
+  <div class="sidebar-topo">
+    <strong>Painel do Coordenador</strong>
+    <span>Escala Pastoral do Rosário</span>
+  </div>
+  <button class="sidebar-item" data-navegar="tela-admin-dashboard"><span class="icone">📊</span>Painel</button>
+  <button class="sidebar-item" data-navegar="tela-admin-membros"><span class="icone">👥</span>Membros</button>
+  <button class="sidebar-item" data-navegar="tela-admin-igrejas"><span class="icone">⛪</span>Igrejas</button>
+  <button class="sidebar-item" data-navegar="tela-admin-eventos"><span class="icone">🎉</span>Eventos</button>
+  <button class="sidebar-item" data-navegar="tela-admin-gerar-escala"><span class="icone">✨</span>Gerar Escala</button>
+  <button class="sidebar-item" data-navegar="tela-admin-historico"><span class="icone">📖</span>Histórico Geral</button>
+  <button class="sidebar-item" data-navegar="tela-admin-relatorios"><span class="icone">📈</span>Relatórios</button>
+  <button class="sidebar-item" data-navegar="tela-admin-configuracoes"><span class="icone">⚙️</span>Configurações</button>
+  <button class="sidebar-item sidebar-sair" id="btn-sair-admin"><span class="icone">🚪</span>Sair</button>
+</nav>
+<div class="sidebar-overlay" id="sidebar-overlay" hidden></div>
+
 <div class="app-container" id="app-container">
 
   <header class="topbar" id="topbar" hidden>
-    <button class="topbar-acao" id="btn-voltar" aria-label="Voltar" hidden>←</button>
+    <button class="btn-menu-hamburguer" id="btn-menu" aria-label="Abrir menu">☰</button>
     <span class="topbar-titulo" id="topbar-titulo">Coordenador</span>
     <button class="topbar-acao" id="btn-notificacoes" aria-label="Notificações">🔔</button>
   </header>
@@ -82,10 +102,13 @@
          MEMBROS
          ================================================================== -->
     <section class="tela" id="tela-admin-membros" data-titulo="Membros" hidden>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="cabecalho-tela">
         <h2>Membros</h2>
         <button class="botao botao-primario" id="btn-novo-membro">+ Novo</button>
       </div>
+
+      <div id="aviso-pendentes-vinculo" hidden></div>
+
       <div class="campo" style="margin-bottom:8px;">
         <input type="search" id="busca-membros" placeholder="Buscar por nome...">
       </div>
@@ -96,7 +119,7 @@
          IGREJAS
          ================================================================== -->
     <section class="tela" id="tela-admin-igrejas" data-titulo="Igrejas" hidden>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="cabecalho-tela">
         <h2>Igrejas</h2>
         <button class="botao botao-primario" id="btn-nova-igreja">+ Nova</button>
       </div>
@@ -107,7 +130,7 @@
          EVENTOS
          ================================================================== -->
     <section class="tela" id="tela-admin-eventos" data-titulo="Eventos" hidden>
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+      <div class="cabecalho-tela">
         <h2>Eventos</h2>
         <button class="botao botao-primario" id="btn-novo-evento">+ Novo</button>
       </div>
@@ -125,7 +148,7 @@
     <!-- ==================================================================
          HISTÓRICO GERAL
          ================================================================== -->
-    <section class="tela" id="tela-admin-historico" data-titulo="Histórico" hidden>
+    <section class="tela" id="tela-admin-historico" data-titulo="Histórico Geral" hidden>
       <h2 style="margin-bottom:16px;">Histórico Geral</h2>
       <div id="lista-admin-historico"></div>
     </section>
@@ -139,15 +162,10 @@
     </section>
 
     <!-- ==================================================================
-         MAIS (configurações do sistema + sair)
+         CONFIGURAÇÕES
          ================================================================== -->
-    <section class="tela" id="tela-admin-mais" data-titulo="Mais" hidden>
-      <h2 style="margin-bottom:16px;">Mais</h2>
-
-      <div style="display:flex; flex-direction:column; gap:10px; margin-bottom:24px;">
-        <button class="botao botao-secundario botao-bloco" data-navegar="tela-admin-historico">📖 Histórico Geral</button>
-        <button class="botao botao-secundario botao-bloco" data-navegar="tela-admin-relatorios">📊 Relatórios</button>
-      </div>
+    <section class="tela" id="tela-admin-configuracoes" data-titulo="Configurações" hidden>
+      <h2 style="margin-bottom:16px;">Configurações</h2>
 
       <div class="card" style="margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
         <span>Tema escuro</span>
@@ -157,27 +175,22 @@
         </label>
       </div>
 
-      <div class="campo">
-        <label for="nova-senha-admin">Nova senha de coordenador</label>
-        <input type="password" id="nova-senha-admin" placeholder="Deixe em branco para manter">
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="margin-bottom:12px;">Segurança</h3>
+        <div class="campo">
+          <label for="nova-senha-admin">Nova senha de coordenador</label>
+          <input type="password" id="nova-senha-admin" placeholder="Deixe em branco para manter">
+        </div>
+        <button class="botao botao-secundario botao-bloco" id="btn-salvar-senha">Salvar Senha</button>
       </div>
-      <button class="botao botao-secundario botao-bloco" id="btn-salvar-senha" style="margin-bottom:16px;">Salvar Senha</button>
 
-      <button class="botao botao-secundario botao-bloco" id="btn-backup-exportar-admin" style="margin-bottom:24px;">Exportar Backup Completo</button>
-
-      <button class="botao botao-texto botao-bloco" id="btn-sair-admin">Sair</button>
+      <div class="card">
+        <h3 style="margin-bottom:12px;">Dados</h3>
+        <button class="botao botao-secundario botao-bloco" id="btn-backup-exportar-admin">Exportar Backup Completo</button>
+      </div>
     </section>
 
   </main>
-
-  <nav class="nav-inferior" id="nav-principal" hidden>
-    <button class="nav-item" data-navegar="tela-admin-dashboard"><span class="icone">📊</span>Painel</button>
-    <button class="nav-item" data-navegar="tela-admin-membros"><span class="icone">👥</span>Membros</button>
-    <button class="nav-item" data-navegar="tela-admin-igrejas"><span class="icone">⛪</span>Igrejas</button>
-    <button class="nav-item" data-navegar="tela-admin-eventos"><span class="icone">🎉</span>Eventos</button>
-    <button class="nav-item" data-navegar="tela-admin-gerar-escala"><span class="icone">✨</span>Escala</button>
-    <button class="nav-item" data-navegar="tela-admin-mais"><span class="icone">⋯</span>Mais</button>
-  </nav>
 
   <footer class="rodape-app" id="rodape-institucional">
     <img src="../shared/assets/logo/logo-paroquia.png" alt="" onerror="this.style.display='none'">
@@ -197,6 +210,7 @@
 <script src="../shared/js/storage.js"></script>
 <script src="../shared/js/api.js"></script>
 <script src="../shared/js/ui.js"></script>
+<script src="../shared/js/helpers.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/admin.js"></script>

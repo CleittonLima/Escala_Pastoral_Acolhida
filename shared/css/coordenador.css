@@ -1,0 +1,123 @@
+/* ==========================================================================
+   coordenador.css
+   Estilos exclusivos do app do Coordenador — não é carregado pelo app do
+   Membro. Substitui a barra de abas inferior por um menu lateral (fixo no
+   desktop, gaveta deslizante no celular), com mais espaço para crescer.
+   ========================================================================== */
+
+body.coordenador .app-container {
+  max-width: none;
+}
+
+body.coordenador #conteudo-principal {
+  padding-bottom: var(--espaco-6);
+}
+
+body.coordenador .topbar {
+  padding-left: var(--espaco-2);
+}
+
+.btn-menu-hamburguer {
+  background: none;
+  border: none;
+  color: var(--cor-texto-inverso);
+  font-size: 1.4rem;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--raio-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transicao-rapida);
+}
+.btn-menu-hamburguer:hover { background: rgba(255,255,255,0.12); }
+
+/* ---- Menu lateral ---- */
+/* O seletor hidden precisa vencer o display:flex do .sidebar */
+.sidebar[hidden] { display: none !important; }
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 260px;
+  background: var(--cor-primaria-escura);
+  color: var(--cor-texto-inverso);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  padding: var(--espaco-5) 0;
+  transform: translateX(-100%);
+  transition: transform var(--transicao-media);
+  overflow-y: auto;
+}
+.sidebar.aberto { transform: translateX(0); }
+
+.sidebar-topo {
+  padding: 0 var(--espaco-5) var(--espaco-5);
+  border-bottom: 1px solid rgba(255,255,255,0.15);
+  margin-bottom: var(--espaco-3);
+}
+.sidebar-topo strong { display: block; font-family: var(--fonte-titulo); font-size: 1.15rem; }
+.sidebar-topo span { font-size: var(--tamanho-xs); opacity: 0.8; }
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-3);
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  color: var(--cor-texto-inverso);
+  padding: var(--espaco-3) var(--espaco-5);
+  font-size: var(--tamanho-md);
+  font-weight: 600;
+  opacity: 0.82;
+  transition: background var(--transicao-rapida), opacity var(--transicao-rapida);
+}
+.sidebar-item .icone { font-size: 1.1rem; width: 22px; text-align: center; }
+.sidebar-item:hover { background: rgba(255,255,255,0.08); opacity: 1; }
+.sidebar-item.ativo {
+  background: rgba(255,255,255,0.14);
+  opacity: 1;
+  border-left: 4px solid var(--cor-destaque);
+  padding-left: calc(var(--espaco-5) - 4px);
+}
+.sidebar-sair { margin-top: auto; opacity: 0.7; }
+
+.cabecalho-tela {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--espaco-3);
+  margin-bottom: var(--espaco-4);
+  flex-wrap: wrap;
+}
+.cabecalho-tela h2 { margin: 0; }
+
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 190;
+}
+.sidebar-overlay[hidden] { display: none; }
+
+/* ---- Desktop: sidebar sempre visível, conteúdo desloca ---- */
+@media (min-width: 900px) {
+  .btn-menu-hamburguer { display: none; }
+  .sidebar-overlay { display: none !important; }
+
+  /* No desktop, sidebar sempre visível — mas só quando não está [hidden] */
+  .sidebar:not([hidden]) {
+    transform: translateX(0);
+    box-shadow: none;
+  }
+
+  body.coordenador .app-container {
+    margin-left: 260px;
+    max-width: none;
+  }
+}

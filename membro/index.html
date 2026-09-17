@@ -16,6 +16,7 @@
 <link rel="stylesheet" href="../shared/css/components.css">
 <link rel="stylesheet" href="../shared/css/responsive.css">
 <link rel="stylesheet" href="../shared/css/animations.css">
+<link rel="stylesheet" href="../shared/css/print.css">
 </head>
 <body>
 
@@ -61,13 +62,60 @@
         <form id="form-login-membro">
           <div class="campo">
             <label for="login-telefone">Telefone cadastrado</label>
-            <input type="tel" id="login-telefone" placeholder="(00) 00000-0000" required inputmode="tel">
+            <input type="tel" id="login-telefone" required>
           </div>
           <button type="submit" class="botao botao-primario botao-bloco">Entrar</button>
         </form>
       </div>
-      <p style="margin-top:16px; text-align:center; color:var(--cor-texto-secundario); font-size:var(--tamanho-sm);">
-        Não encontrou seu cadastro? Fale com o coordenador da Pastoral.
+      <p style="margin-top:16px; text-align:center; font-size:var(--tamanho-sm);">
+        <a href="javascript:void(0)" data-navegar="tela-cadastro" style="color:var(--cor-primaria); font-weight:600; text-decoration:underline;">Ainda não tenho conta — criar agora</a>
+      </p>
+    </section>
+
+    <!-- ==================================================================
+         CADASTRO (o próprio membro cria sua conta)
+         ================================================================== -->
+    <section class="tela" id="tela-cadastro" data-sem-nav="true" hidden>
+      <h2 style="margin-bottom:4px;">Criar minha conta</h2>
+      <p style="color:var(--cor-texto-secundario); margin-bottom:20px;">Leva menos de um minuto.</p>
+
+      <form id="form-cadastro">
+        <div class="campo">
+          <label for="cadastro-nome">Nome completo</label>
+          <input type="text" id="cadastro-nome" required>
+        </div>
+        <div class="campo">
+          <label for="cadastro-apelido">Como prefere ser chamado(a)</label>
+          <input type="text" id="cadastro-apelido" placeholder="Ex.: Bia, Zé">
+        </div>
+        <div class="campo">
+          <label for="cadastro-telefone">Telefone (será seu acesso)</label>
+          <input type="tel" id="cadastro-telefone" required>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="campo"><label for="cadastro-sexo">Sexo</label><select id="cadastro-sexo" required><option value="">Selecione</option><option value="Masculino">Masculino</option><option value="Feminino">Feminino</option></select></div>
+          <div class="campo"><label for="cadastro-categoria">Categoria na escala</label><select id="cadastro-categoria" required><option value="Jovem">Jovem solteiro(a)</option><option value="Adulto">Adulto solteiro(a)</option><option value="Casado">Casado(a)</option></select></div>
+        </div>
+        <div class="campo"><label>Participa de (marque todas as opções)</label><div id="opcoes-pastorais-cadastro" style="display:flex; flex-wrap:wrap; gap:10px;"></div></div>
+        <div class="campo"><label for="cadastro-preferencia-igreja">Igreja onde prefere servir</label><select id="cadastro-preferencia-igreja"><option value="Sem preferência">Sem preferência</option></select></div>
+        <div class="campo"><label>Preferência de horários</label><div id="opcoes-horarios-cadastro" style="display:flex; flex-wrap:wrap; gap:10px;"></div></div>
+
+        <div class="campo" id="campo-vincular-parceiro" hidden>
+          <label for="cadastro-parceiro">Vincular ao seu cônjuge/dupla</label>
+          <select id="cadastro-parceiro">
+            <option value="">Meu(minha) parceiro(a) ainda não criou a conta</option>
+          </select>
+          <p style="color:var(--cor-texto-secundario); font-size:var(--tamanho-xs); margin-top:4px;">
+            Se ele(a) ainda não tiver conta, seu cadastro será salvo normalmente. Quando ele(a) se cadastrar poderá concluir o vínculo; o coordenador também pode fazê-lo depois.
+          </p>
+        </div>
+
+        <button type="submit" class="botao botao-primario botao-bloco" style="margin-top:8px;">Criar conta</button>
+      </form>
+
+      <p style="margin-top:16px; text-align:center; font-size:var(--tamanho-sm);">
+        <a href="javascript:void(0)" data-navegar="tela-inicial" style="color:var(--cor-texto-secundario); text-decoration:underline;">Já tenho conta — entrar</a>
       </p>
     </section>
 
@@ -100,13 +148,16 @@
 
     <section class="tela" id="tela-disponibilidade" data-titulo="Disponibilidade" hidden>
       <h2 style="margin-bottom:4px;">Disponibilidade do mês</h2>
-      <p id="periodo-disponibilidade" style="color:var(--cor-texto-secundario); margin-bottom:20px;"></p>
+      <p id="periodo-disponibilidade" style="color:var(--cor-texto-secundario); margin-bottom:8px;"></p>
+      <p style="color:var(--cor-texto-secundario); font-size:var(--tamanho-xs); margin-bottom:16px;">
+        Toque no card para marcar o dia — é salvo na hora, não precisa apertar nada depois.
+      </p>
       <div id="lista-disponibilidade"></div>
       <div class="campo">
         <label for="obs-mes">Observações deste mês</label>
         <textarea id="obs-mes" rows="3" placeholder="Ex.: Estarei em retiro no dia 20"></textarea>
       </div>
-      <button class="botao botao-primario botao-bloco" id="btn-salvar-disponibilidade">Salvar Disponibilidade</button>
+      <p id="disponibilidade-status" style="color:var(--cor-sucesso); font-size:var(--tamanho-xs); min-height:1.2em; text-align:center;"></p>
     </section>
 
     <section class="tela" id="tela-historico-membro" data-titulo="Meu Histórico" hidden>
@@ -134,6 +185,21 @@
     <section class="tela" id="tela-ajustes" data-titulo="Ajustes" hidden>
       <h2 style="margin-bottom:16px;">Ajustes</h2>
 
+      <div class="card" style="margin-bottom:16px;">
+        <h3 style="margin-bottom:12px;">Meu perfil</h3>
+        <div class="campo">
+          <label for="ajustes-nome">Nome completo</label>
+          <input type="text" id="ajustes-nome">
+        </div>
+        <div class="campo">
+          <label for="ajustes-apelido">Como prefere ser chamado(a) no app</label>
+          <input type="text" id="ajustes-apelido" placeholder="Ex.: Zé, Bia...">
+        </div>
+        <div class="campo"><label for="ajustes-preferencia-igreja">Igreja onde prefiro servir</label><select id="ajustes-preferencia-igreja"><option value="Sem preferência">Sem preferência</option></select></div>
+        <div class="campo"><label>Horários que prefiro servir</label><div id="ajustes-preferencia-horarios" style="display:flex; flex-wrap:wrap; gap:10px;"></div></div>
+        <button class="botao botao-secundario botao-bloco" id="btn-salvar-perfil">Salvar Perfil</button>
+      </div>
+
       <div class="card" style="margin-bottom:16px; display:flex; align-items:center; justify-content:space-between;">
         <span>Tema escuro</span>
         <label class="interruptor">
@@ -160,7 +226,7 @@
     <button class="nav-item" data-navegar="tela-ajustes"><span class="icone">⚙️</span>Ajustes</button>
   </nav>
 
-  <footer class="rodape-app" id="rodape-institucional" hidden>
+  <footer class="rodape-app" id="rodape-institucional">
     <img src="../shared/assets/logo/logo-paroquia.png" alt="" onerror="this.style.display='none'">
     <div class="rodape-linhas">
       <span class="rodape-linha-principal">Paróquia Nossa Senhora do Rosário</span>
@@ -178,9 +244,11 @@
 <script src="../shared/js/storage.js"></script>
 <script src="../shared/js/api.js"></script>
 <script src="../shared/js/ui.js"></script>
+<script src="../shared/js/helpers.js"></script>
 <script src="js/auth.js"></script>
 <script src="js/notifications.js"></script>
 <script src="js/members.js"></script>
+<script src="js/cadastro.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

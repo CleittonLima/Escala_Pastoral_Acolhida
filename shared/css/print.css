@@ -1,0 +1,56 @@
+/* ==========================================================================
+   print.css
+   Folha de estilo dedicada à impressão e geração de PDF.
+   Esconde toda a interface (nav, topbar, botões, sidebar) e deixa
+   só o conteúdo da escala visível e limpo.
+   ========================================================================== */
+
+@media print {
+  /* Esconder tudo que não é conteúdo */
+  .topbar, .nav-inferior, .sidebar, .sidebar-overlay,
+  #btn-gerar-agora, #btn-duplicar-escala, #btn-publicar-escala,
+  #btn-imprimir-escala, #btn-compartilhar-escala,
+  .botao, .botao-icone, .modal-fundo, #splash-screen,
+  [data-navegar], .acoes, nav, header, footer.rodape-app,
+  #lista-prioridades, .cabecalho-tela button {
+    display: none !important;
+  }
+
+  body, .app-container, #conteudo-principal, .tela {
+    margin: 0 !important;
+    padding: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    box-shadow: none !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Cabeçalho de impressão */
+  #resultado-geracao::before {
+    content: "Escala Pastoral do Rosário — " attr(data-mes);
+    display: block;
+    font-size: 18pt;
+    font-weight: bold;
+    margin-bottom: 16pt;
+    border-bottom: 2pt solid #5C1A2B;
+    padding-bottom: 8pt;
+  }
+
+  .item-escala {
+    break-inside: avoid;
+    border: 1pt solid #ccc !important;
+    margin-bottom: 6pt !important;
+    padding: 6pt 8pt !important;
+    background: white !important;
+  }
+
+  .badge { border: 1pt solid currentColor !important; }
+
+  a { color: inherit !important; text-decoration: none !important; }
+
+  @page {
+    margin: 1.5cm;
+    size: A4 portrait;
+  }
+}

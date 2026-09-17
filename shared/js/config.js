@@ -22,6 +22,7 @@ const CONFIG = {
     COR_PERSONALIZADA: "escalaRosario_corPersonalizada",
     SESSAO_MEMBRO: "escalaRosario_sessaoMembroId",
     SESSAO_ADMIN: "escalaRosario_sessaoAdmin",
+    TOKEN_COORD: "escalaRosario_tokenCoord",
   },
 
   // Dias da semana usados na disponibilidade mensal.
@@ -39,6 +40,26 @@ const CONFIG = {
     "São Cristóvão",
     "Nossa Senhora da Conceição",
     "Sem preferência",
+  ],
+
+  // Pastorais/grupos que um membro pode participar (múltipla escolha no
+  // cadastro). PARA ADICIONAR UMA NOVA OPÇÃO: só incluir mais uma string
+  // nesta lista — o formulário de membros (no app do Coordenador) já lê
+  // daqui automaticamente, não precisa mexer em mais nada.
+  OPCOES_PASTORAIS: [
+    "EJC",
+    "ECC",
+    "RCC",
+    "JMV",
+    "JOCA",
+    "PASCOM",
+    "Pastoral da Criança",
+    "Pastoral do Idoso",
+    "Pastoral da Juventude",
+    "Pastoral do Dízimo",
+    "Catequese",
+    "Coral/Música",
+    "Outra",
   ],
 };
 

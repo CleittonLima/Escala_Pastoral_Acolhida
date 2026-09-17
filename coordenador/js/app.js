@@ -6,6 +6,7 @@
 
 const App = {
   async abrirPainelAdmin() {
+    document.getElementById("sidebar").hidden = false;
     await Dashboard.carregarPainelAdmin();
     UI.reiniciarHistorico();
     UI.navegarPara("tela-admin-dashboard", { empilhar: false });
@@ -15,8 +16,19 @@ const App = {
 document.addEventListener("DOMContentLoaded", iniciar);
 
 async function iniciar() {
+  if (!CONFIG.URL_API || CONFIG.URL_API === "COLE_AQUI_A_URL_DO_APPS_SCRIPT") {
+    document.body.innerHTML = `
+      <div class="aviso-sem-url">
+        <h2>⚙ Configuração necessária</h2>
+        <p>A URL do Google Apps Script ainda não foi configurada.<br>
+        Abra o arquivo <code>shared/js/config.js</code> e cole a URL do Web App.</p>
+        <p>Consulte o <strong>GUIA_DE_INSTALACAO.md</strong> (Parte 4).</p>
+      </div>`;
+    return;
+  }
   UI.aplicarTemaSalvo();
   _registrarServiceWorker();
+  _ligarMenuLateral();
   _ligarNavegacaoComCarregamentoDeDados();
   _ligarConfiguracoes();
 
@@ -41,6 +53,33 @@ function _registrarServiceWorker() {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("./service-worker.js").catch((erro) => {
       console.warn("[app-coordenador] falha ao registrar service worker:", erro);
+    });
+  });
+}
+
+function _ligarMenuLateral() {
+  const sidebar = document.getElementById("sidebar");
+  const overlay = document.getElementById("sidebar-overlay");
+  const btnMenu = document.getElementById("btn-menu");
+
+  const abrir = () => {
+    sidebar.classList.add("aberto");
+    overlay.hidden = false;
+  };
+  const fechar = () => {
+    sidebar.classList.remove("aberto");
+    overlay.hidden = true;
+  };
+
+  btnMenu?.addEventListener("click", abrir);
+  overlay?.addEventListener("click", fechar);
+
+  // Marca o item ativo no menu e fecha a gaveta no celular após escolher.
+  sidebar.querySelectorAll("[data-navegar]").forEach((item) => {
+    item.addEventListener("click", () => {
+      sidebar.querySelectorAll(".sidebar-item").forEach((i) => i.classList.remove("ativo"));
+      item.classList.add("ativo");
+      if (window.innerWidth < 900) fechar();
     });
   });
 }

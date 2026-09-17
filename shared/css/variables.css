@@ -68,6 +68,7 @@
   /* ---- Layout ---- */
   --largura-maxima: 480px; /* mobile-first, centraliza em telas largas */
   --altura-topbar: 64px;
+  --altura-nav: 64px;
   --altura-rodape: 88px;
 }
 
@@ -98,11 +99,10 @@
   --sombra-flutuante: 0 8px 24px rgba(0, 0, 0, 0.55);
 }
 
-/* ---- Cores personalizáveis pelo administrador ----
-   Estas variáveis são sobrescritas em tempo de execução (via JS, em
-   config.js/ui.js) quando o admin altera a personalização de cores nas
-   Configurações. Mantidas aqui como fallback/documentação. */
-[data-cor-personalizada] {
-  --cor-primaria: var(--cor-primaria-custom, var(--cor-primaria));
-  --cor-destaque: var(--cor-destaque-custom, var(--cor-destaque));
-}
+/* Personalização de cores pelo coordenador: recurso planejado, ainda não
+   implementado. Removido daqui um `[data-cor-personalizada]` anterior que
+   redefinia --cor-primaria referenciando a si mesma — isso invalidava a
+   variável no navegador e deixava textos/botões brancos-no-branco em
+   qualquer elemento marcado com esse atributo. Quando o recurso for
+   implementado, o JS deve gravar um valor concreto (não outra var()) em
+   --cor-primaria-custom antes de usar esse seletor. */

@@ -38,6 +38,7 @@ const Churches = {
               <span class="badge badge-info">Casais: ${igreja.qtdCasais ?? 0}</span>
               <span class="badge badge-info">Jovens: ${igreja.qtdJovens ?? 0}</span>
               <span class="badge badge-info">Adultos: ${igreja.qtdAdultos ?? 0}</span>
+              <span class="badge badge-aviso">Chegar ${igreja.minutosChegada ?? 30}min antes</span>
             </div>
           </div>
           <div class="acoes">
@@ -80,10 +81,21 @@ const Churches = {
       <h2>${idIgreja ? "Editar Igreja" : "Nova Igreja"}</h2>
       <form id="form-igreja">
         <div class="campo"><label>Nome</label><input name="nome" required value="${_escapar(igreja.nome)}"></div>
-        <div class="campo"><label>Padroeiro</label><input name="padroeiro" value="${_escapar(igreja.padroeiro)}"></div>
-        <div class="campo"><label>Comunidade</label><input name="comunidade" value="${_escapar(igreja.comunidade)}"></div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="campo"><label>Padroeiro</label><input name="padroeiro" value="${_escapar(igreja.padroeiro)}"></div>
+          <div class="campo"><label>Comunidade</label><input name="comunidade" value="${_escapar(igreja.comunidade)}"></div>
+        </div>
         <div class="campo"><label>Endereço</label><input name="endereco" value="${_escapar(igreja.endereco)}"></div>
-        <div class="campo"><label>Horários (ex.: Qui 19h, Dom 7h e 19h)</label><input name="horarios" value="${_escapar(igreja.horarios)}"></div>
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:10px;">
+          <div class="campo"><label>Horários (ex.: Qui 19h, Dom 7h e 19h)</label><input name="horarios" value="${_escapar(igreja.horarios)}"></div>
+          <div class="campo">
+            <label>Chegar com quantos min. de antecedência</label>
+            <input type="number" min="0" step="5" name="minutosChegada" value="${igreja.minutosChegada ?? 30}">
+          </div>
+        </div>
+        <p style="color:var(--cor-texto-secundario); font-size:var(--tamanho-xs); margin-top:-6px; margin-bottom:10px;">
+          A acolhida costuma precisar chegar antes da missa começar — use esse campo para avisar com quanto tempo.
+        </p>
         <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px;">
           <div class="campo"><label>Casais</label><input type="number" min="0" name="qtdCasais" value="${igreja.qtdCasais ?? 0}"></div>
           <div class="campo"><label>Jovens</label><input type="number" min="0" name="qtdJovens" value="${igreja.qtdJovens ?? 0}"></div>

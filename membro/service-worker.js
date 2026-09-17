@@ -6,7 +6,7 @@
    cacheados — sempre buscados em rede pela Fetch API em shared/js/api.js.
    ========================================================================== */
 
-const CACHE_NOME = "escala-rosario-membro-v1";
+const CACHE_NOME = "escala-rosario-membro-v3";
 
 const ARQUIVOS_APP_SHELL = [
   "./",
@@ -21,9 +21,11 @@ const ARQUIVOS_APP_SHELL = [
   "../shared/js/storage.js",
   "../shared/js/api.js",
   "../shared/js/ui.js",
+  "../shared/js/helpers.js",
   "./js/auth.js",
   "./js/notifications.js",
   "./js/members.js",
+  "./js/cadastro.js",
   "./js/app.js",
   "../shared/assets/logo/logo-pastoral.png",
   "../shared/assets/logo/logo-paroquia.png",

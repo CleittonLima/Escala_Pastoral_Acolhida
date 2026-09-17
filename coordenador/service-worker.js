@@ -4,7 +4,7 @@
    via Apps Script) nunca são cacheados — sempre buscados em rede.
    ========================================================================== */
 
-const CACHE_NOME = "escala-rosario-coordenador-v1";
+const CACHE_NOME = "escala-rosario-coordenador-v3";
 
 const ARQUIVOS_APP_SHELL = [
   "./",
@@ -15,10 +15,13 @@ const ARQUIVOS_APP_SHELL = [
   "../shared/css/components.css",
   "../shared/css/responsive.css",
   "../shared/css/animations.css",
+  "../shared/css/print.css",
+  "../shared/css/coordenador.css",
   "../shared/js/config.js",
   "../shared/js/storage.js",
   "../shared/js/api.js",
   "../shared/js/ui.js",
+  "../shared/js/helpers.js",
   "./js/auth.js",
   "./js/notifications.js",
   "./js/admin.js",

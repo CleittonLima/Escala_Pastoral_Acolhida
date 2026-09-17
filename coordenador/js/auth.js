@@ -1,32 +1,34 @@
 /* ==========================================================================
    auth.js (app do Coordenador)
-   Autenticação do Coordenador por senha (verificada no backend). Este app
-   NÃO contém nenhuma lógica de membro — isso vive inteiramente em
-   /membro/js/auth.js, em outro projeto/URL.
+   Autenticação por senha real com token de sessão (8h). O token é salvo
+   no localStorage e enviado automaticamente em toda requisição via api.js.
    ========================================================================== */
 
 const Auth = {
   sessaoAtiva: false,
 
-  /** Restaura sessão salva neste dispositivo, se houver. */
+  /** Restaura sessão salva se o token ainda existir. */
   restaurarSessao() {
-    this.sessaoAtiva = Storage.obter(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN) === "ativa";
+    this.sessaoAtiva = Storage.obter(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN) === "ativa"
+                    && !!Storage.obter(CONFIG.CHAVES_LOCAL.TOKEN_COORD);
     return this.sessaoAtiva;
   },
 
+  /** Login: valida senha no backend, recebe e salva token. */
   async entrar(senha) {
-    const resposta = await Api.buscar("configuracoes", { verificarSenha: senha });
-    if (!resposta.sucesso || !resposta.dados?.senhaValida) {
-      return { sucesso: false, erro: "Senha incorreta." };
+    const resultado = await Api.loginCoordenador(senha);
+    if (resultado.sucesso) {
+      this.sessaoAtiva = true;
     }
-    this.sessaoAtiva = true;
-    Storage.salvar(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN, "ativa");
-    return { sucesso: true };
+    return resultado;
   },
 
   sair() {
     this.sessaoAtiva = false;
-    Storage.remover(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN);
+    Api.logoutCoordenador();
+    document.getElementById("sidebar").hidden = true;
+    document.getElementById("sidebar").classList.remove("aberto");
+    document.getElementById("sidebar-overlay").hidden = true;
     UI.reiniciarHistorico();
     UI.navegarPara("tela-inicial", { empilhar: false });
   },
@@ -45,7 +47,7 @@ document.getElementById("form-login-admin")?.addEventListener("submit", async (e
   botao.textContent = "Entrar";
 
   if (!resultado.sucesso) {
-    UI.mostrarToast(resultado.erro);
+    UI.mostrarToast(resultado.erro || "Senha incorreta.");
     return;
   }
 

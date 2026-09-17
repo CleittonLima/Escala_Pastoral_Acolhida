@@ -8,18 +8,19 @@
 /** Mapa nomeDaAba -> lista de colunas, na ordem em que aparecem na planilha. */
 const CABECALHOS_ABAS = {
   MEMBROS: [
-    "id", "nome", "telefone", "whatsapp", "email", "casado", "nomeConjuge",
-    "participaDe", "comunidade", "preferenciaIgreja", "observacoes", "status", "dataCadastro",
+    "id", "nome", "apelido", "telefone", "whatsapp", "email", "casado", "nomeConjuge",
+    "participaDe", "comunidade", "preferenciaIgreja", "preferenciaHorarios", "sexo", "categoriaServico", "observacoes", "status", "dataCadastro",
+    "vinculoConjugeId", "casalPendente", "autoCadastro",
   ],
   ESCALAS: [
     "id", "mesReferencia", "igrejaId", "igrejaNome", "eventoId", "eventoNome",
-    "data", "horario", "funcao", "membroId", "membroNome", "status", "dataPublicacao",
+    "data", "horario", "funcao", "membroId", "membroNome", "grupoId", "tipoUnidade", "status", "dataPublicacao",
   ],
   EVENTOS: [
     "id", "nome", "data", "hora", "local", "qtdCasais", "qtdJovens", "qtdAdultos", "observacoes",
   ],
   IGREJAS: [
-    "id", "nome", "padroeiro", "comunidade", "endereco", "horarios",
+    "id", "nome", "padroeiro", "comunidade", "endereco", "horarios", "minutosChegada",
     "qtdCasais", "qtdJovens", "qtdAdultos", "observacoes",
   ],
   HISTORICO: [
@@ -31,6 +32,7 @@ const CABECALHOS_ABAS = {
   ],
   CONFIGURACOES: ["chave", "valor"],
   NOTIFICACOES: ["id", "destinatario", "tipo", "mensagem", "data", "lida"],
+  PRIORIDADES:  ["id", "membroId", "mesReferencia"],
 };
 
 /** Garante que todas as abas existam (chamado no início de doGet/doPost). */

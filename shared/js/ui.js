@@ -67,7 +67,12 @@ const UI = {
         item.classList.toggle("ativo", item.dataset.navegar === idTela);
       });
     }
-    if (rodape) rodape.hidden = !telaPublica;
+
+    // O rodapé institucional é um único elemento que "se move" para dentro
+    // da aba atualmente visível, sempre no fim do conteúdo dela — em vez de
+    // ficar fixo abaixo da navegação (o que empurrava a navegação para fora
+    // do lugar quando o conteúdo era curto).
+    if (rodape) telaAlvo.appendChild(rodape);
   },
 
   /* ---- Tema ---- */

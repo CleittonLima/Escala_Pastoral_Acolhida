@@ -38,9 +38,19 @@ button { font-family: inherit; cursor: pointer; }
   position: relative;
 }
 
+#conteudo-principal {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: calc(var(--altura-nav) + var(--espaco-3));
+}
+
 .tela {
   flex: 1;
-  padding: var(--espaco-5) var(--espaco-4) var(--espaco-7);
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: var(--espaco-5) var(--espaco-4) var(--espaco-5);
   animation: entrada-suave var(--transicao-media) ease;
 }
 
@@ -140,6 +150,7 @@ button { font-family: inherit; cursor: pointer; }
   padding: 0 var(--espaco-4);
   box-shadow: var(--sombra-card);
 }
+.topbar[hidden] { display: none; }
 
 .topbar-titulo {
   font-family: var(--fonte-titulo);
@@ -183,18 +194,21 @@ button { font-family: inherit; cursor: pointer; }
    RODAPÉ
    ========================================================================== */
 .rodape-app {
-  border-top: 1px solid var(--cor-borda);
-  padding: var(--espaco-4);
+  margin-top: auto;
+  padding-top: var(--espaco-5);
+  padding-bottom: var(--espaco-2);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--espaco-3);
+  text-align: center;
+  gap: var(--espaco-1);
   color: var(--cor-texto-secundario);
   font-size: var(--tamanho-xs);
-  background: var(--cor-fundo-alt);
 }
-.rodape-app img { width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0; }
+.rodape-app[hidden] { display: none; }
+.rodape-app img { width: 26px; height: 26px; border-radius: 50%; opacity: 0.85; }
 .rodape-app .rodape-linhas { display: flex; flex-direction: column; gap: 2px; }
-.rodape-app .rodape-linha-principal { color: var(--cor-texto); font-weight: 600; }
+.rodape-app .rodape-linha-principal { color: var(--cor-texto-secundario); font-weight: 700; }
 
 /* ==========================================================================
    BOTÕES
@@ -265,4 +279,29 @@ button { font-family: inherit; cursor: pointer; }
 .campo textarea:focus {
   outline: none;
   border-color: var(--cor-primaria);
+}
+
+/* ---- URL do Apps Script não configurada: alerta visual amigável ---- */
+.aviso-sem-url {
+  position: fixed;
+  inset: 0;
+  background: var(--cor-primaria-escura);
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 32px;
+  text-align: center;
+  gap: 16px;
+}
+.aviso-sem-url h2 { color: var(--cor-destaque); font-size: 1.4rem; }
+.aviso-sem-url p  { opacity: 0.85; line-height: 1.6; }
+.aviso-sem-url code {
+  background: rgba(255,255,255,0.12);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: monospace;
+  font-size: 0.9rem;
 }

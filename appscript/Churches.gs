@@ -22,6 +22,7 @@ function criarIgreja(dados) {
     comunidade: dados.comunidade || "",
     endereco: dados.endereco || "",
     horarios: dados.horarios || "",
+    minutosChegada: Number(dados.minutosChegada) || 30,
     qtdCasais: Number(dados.qtdCasais) || 0,
     qtdJovens: Number(dados.qtdJovens) || 0,
     qtdAdultos: Number(dados.qtdAdultos) || 0,
@@ -36,6 +37,7 @@ function atualizarIgreja(dados) {
   dados.qtdCasais = Number(dados.qtdCasais) || 0;
   dados.qtdJovens = Number(dados.qtdJovens) || 0;
   dados.qtdAdultos = Number(dados.qtdAdultos) || 0;
+  if (dados.minutosChegada !== undefined) dados.minutosChegada = Number(dados.minutosChegada) || 0;
   const encontrada = atualizarLinhaPorId("IGREJAS", dados);
   return encontrada ? respostaSucesso(dados) : respostaErro("Igreja não encontrada.");
 }

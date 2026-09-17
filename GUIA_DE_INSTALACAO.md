@@ -139,6 +139,15 @@ Se algo não funcionar, o erro mais comum é a **URL do Apps Script** copiada in
 
 ---
 
+## Atualizando uma instalação que já existia
+
+Se você já tinha o sistema publicado antes e está apenas atualizando o código:
+
+- **Planilha**: não precisa recriar nada. Sempre que o backend rodar, ele confere se as abas têm todas as colunas que a versão atual do código espera e completa as que estiverem faltando automaticamente (no fim da linha 1), sem apagar nenhum dado já existente.
+- **Apps Script**: cole o conteúdo atualizado de cada arquivo `.gs` por cima do conteúdo antigo (mesmo nome de arquivo) e publique uma **Nova versão** da implantação (Parte 3, observação no fim).
+- **GitHub Pages**: suba os arquivos novos por cima dos antigos do mesmo jeito (Parte 7) — o site atualiza sozinho.
+- Se o coordenador já tinha membros cadastrados como casal usando apenas o campo de texto livre "Nome do cônjuge", esses cadastros continuam funcionando normalmente; o novo campo de **vínculo** (que liga a conta de duas pessoas de verdade, para a escala reconhecer o casal) fica em branco para eles até que alguém vincule manualmente pela tela de edição do membro.
+
 ## Lembrete automático de véspera (opcional)
 
 Para que o sistema envie sozinho o "lembrete um dia antes de servir" todos os dias:

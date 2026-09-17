@@ -6,14 +6,21 @@
 
 /* ---- Navegação inferior (mobile) ---- */
 .nav-inferior {
-  position: sticky;
+  position: fixed;
+  left: 50%;
   bottom: 0;
-  z-index: 40;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: var(--largura-maxima);
+  height: var(--altura-nav);
+  z-index: 60;
   display: flex;
   background: var(--cor-fundo-alt);
   border-top: 1px solid var(--cor-borda);
   box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  padding-bottom: env(safe-area-inset-bottom, 0);
 }
+.nav-inferior[hidden] { display: none; }
 .nav-item {
   flex: 1;
   display: flex;

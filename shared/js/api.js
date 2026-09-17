@@ -1,21 +1,29 @@
 /* ==========================================================================
    api.js
    Camada única de comunicação com o backend (Google Apps Script + Sheets).
-   Todas as outras camadas (members.js, scheduler.js, etc.) passam por aqui
-   em vez de chamar fetch() diretamente — isso mantém a URL, o tratamento
-   de erro e o formato de requisição centralizados em um só lugar.
+   Após o login do coordenador, o token de sessão é incluído automaticamente
+   em todas as requisições — sem precisar passá-lo manualmente em nenhum
+   outro arquivo. O membro não usa token (as rotas de leitura do membro
+   são filtradas por ID no backend).
    ========================================================================== */
 
 const Api = {
   /**
-   * Executa uma leitura (GET) no backend.
-   * @param {string} recurso - nome do recurso: "membros", "escalas", "igrejas",
-   *   "eventos", "historico", "disponibilidade", "notificacoes", "configuracoes".
-   * @param {Object} [parametros] - filtros opcionais (ex.: {membroId, mes}).
+   * Lê o token de coordenador do localStorage (se existir).
+   * Retorna "" se não houver sessão de coordenador ativa.
    */
+  _tokenAtual() {
+    return Storage.obter(CONFIG.CHAVES_LOCAL.TOKEN_COORD) || "";
+  },
+
+  /** Busca dados (GET). Inclui token automaticamente se disponível. */
   async buscar(recurso, parametros = {}) {
     const url = new URL(CONFIG.URL_API);
     url.searchParams.set("recurso", recurso);
+
+    const token = this._tokenAtual();
+    if (token) url.searchParams.set("_token", token);
+
     Object.entries(parametros).forEach(([chave, valor]) => {
       if (valor !== undefined && valor !== null) url.searchParams.set(chave, valor);
     });
@@ -28,32 +36,46 @@ const Api = {
     }
   },
 
-  /** Cria um novo registro (POST). */
+  /** Cria novo registro (POST). */
   async criar(recurso, dados) {
     return this._enviar("POST", recurso, dados);
   },
 
-  /** Atualiza um registro existente (PUT). */
+  /** Atualiza registro (PUT). */
   async atualizar(recurso, dados) {
     return this._enviar("PUT", recurso, dados);
   },
 
-  /** Remove um registro (DELETE). */
+  /** Remove registro (DELETE). */
   async remover(recurso, id) {
     return this._enviar("DELETE", recurso, { id });
   },
 
-  /* ---- Internos ---- */
+  /* ---- Login especial: autentica e salva o token ---- */
+  async loginCoordenador(senha) {
+    const resposta = await this.buscar("configuracoes", { verificarSenha: senha });
+    if (resposta.sucesso && resposta.dados?.senhaValida && resposta.dados?.token) {
+      Storage.salvar(CONFIG.CHAVES_LOCAL.TOKEN_COORD, resposta.dados.token);
+      Storage.salvar(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN, "ativa");
+      return { sucesso: true };
+    }
+    return { sucesso: false, erro: "Senha incorreta." };
+  },
 
+  /** Remove o token ao sair. */
+  logoutCoordenador() {
+    Storage.remover(CONFIG.CHAVES_LOCAL.TOKEN_COORD);
+    Storage.remover(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN);
+  },
+
+  /* ---- Internos ---- */
   async _enviar(metodo, recurso, dados) {
-    // O Apps Script Web App só aceita GET/POST nativamente de forma simples
-    // (sem CORS preflight complexo), então PUT/DELETE são simulados via POST
-    // com um campo "_metodo" — Code.gs lê esse campo e roteia corretamente.
     try {
+      const token = this._tokenAtual();
       const resposta = await fetch(CONFIG.URL_API, {
         method: "POST",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify({ recurso, metodo, dados }),
+        body: JSON.stringify({ recurso, metodo, dados, _token: token }),
       });
       return await this._tratarResposta(resposta);
     } catch (erro) {
@@ -62,11 +84,14 @@ const Api = {
   },
 
   async _tratarResposta(resposta) {
-    if (!resposta.ok) {
-      return { sucesso: false, erro: `Erro HTTP ${resposta.status}` };
-    }
+    if (!resposta.ok) return { sucesso: false, erro: `Erro HTTP ${resposta.status}` };
     try {
       const json = await resposta.json();
+      // Se o backend responder "Acesso negado", limpa a sessão local automaticamente
+      if (!json.sucesso && json.erro && json.erro.startsWith("Acesso negado")) {
+        Storage.remover(CONFIG.CHAVES_LOCAL.TOKEN_COORD);
+        Storage.remover(CONFIG.CHAVES_LOCAL.SESSAO_ADMIN);
+      }
       return json;
     } catch {
       return { sucesso: false, erro: "Resposta inválida do servidor." };

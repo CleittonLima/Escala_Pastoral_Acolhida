@@ -4,16 +4,33 @@
  * geração de IDs, conversão linha<->objeto e resposta JSON padronizada.
  */
 
-/** Retorna a aba pelo nome, criando-a (com cabeçalhos) se ainda não existir. */
+/**
+ * Retorna a aba pelo nome, criando-a (com cabeçalhos) se ainda não existir.
+ * Se a aba já existir mas a versão do sistema tiver ganhado colunas novas
+ * desde que ela foi criada (ex.: "apelido", "minutosChegada"), completa os
+ * cabeçalhos que estiverem faltando no fim da linha 1 — sem apagar nada
+ * que já existe. Isso permite atualizar o código sem precisar recriar a
+ * planilha manualmente.
+ */
 function obterAba(nomeAba) {
   const planilha = SpreadsheetApp.getActiveSpreadsheet();
   let aba = planilha.getSheetByName(nomeAba);
+  const cabecalhosEsperados = CABECALHOS_ABAS[nomeAba];
+
   if (!aba) {
     aba = planilha.insertSheet(nomeAba);
-    const cabecalhos = CABECALHOS_ABAS[nomeAba];
-    if (cabecalhos) {
-      aba.getRange(1, 1, 1, cabecalhos.length).setValues([cabecalhos]);
+    if (cabecalhosEsperados) {
+      aba.getRange(1, 1, 1, cabecalhosEsperados.length).setValues([cabecalhosEsperados]);
       aba.setFrozenRows(1);
+    }
+    return aba;
+  }
+
+  if (cabecalhosEsperados && aba.getLastRow() >= 1) {
+    const cabecalhosAtuais = aba.getRange(1, 1, 1, Math.max(aba.getLastColumn(), 1)).getValues()[0];
+    const faltando = cabecalhosEsperados.filter((c) => cabecalhosAtuais.indexOf(c) === -1);
+    if (faltando.length > 0) {
+      aba.getRange(1, cabecalhosAtuais.length + 1, 1, faltando.length).setValues([faltando]);
     }
   }
   return aba;
@@ -52,11 +69,22 @@ function _normalizarValor(valor) {
   return valor;
 }
 
-/** Adiciona uma nova linha a uma aba a partir de um objeto (na ordem dos cabeçalhos). */
+/**
+ * Lê a linha 1 (cabeçalhos) diretamente da planilha, na ORDEM FÍSICA REAL
+ * das colunas — nunca assume que bate com a ordem de CABECALHOS_ABAS no
+ * código. É isso que permite adicionar colunas novas ao código (em
+ * qualquer posição) sem corromper planilhas que já existiam antes delas.
+ */
+function _cabecalhosReaisDaAba(aba) {
+  const largura = Math.max(aba.getLastColumn(), 1);
+  return aba.getRange(1, 1, 1, largura).getValues()[0];
+}
+
+/** Adiciona uma nova linha a uma aba a partir de um objeto, por NOME de coluna. */
 function inserirLinha(nomeAba, objeto) {
   const aba = obterAba(nomeAba);
-  const cabecalhos = CABECALHOS_ABAS[nomeAba];
-  const linha = cabecalhos.map((campo) => (objeto[campo] !== undefined ? objeto[campo] : ""));
+  const cabecalhosReais = _cabecalhosReaisDaAba(aba);
+  const linha = cabecalhosReais.map((campo) => (objeto[campo] !== undefined ? objeto[campo] : ""));
   aba.appendRow(linha);
   return objeto;
 }
@@ -64,13 +92,13 @@ function inserirLinha(nomeAba, objeto) {
 /** Atualiza a primeira linha cuja coluna "id" bata com objeto.id. Retorna true se encontrou. */
 function atualizarLinhaPorId(nomeAba, objeto) {
   const aba = obterAba(nomeAba);
-  const cabecalhos = CABECALHOS_ABAS[nomeAba];
-  const indiceColunaId = cabecalhos.indexOf("id");
+  const cabecalhosReais = _cabecalhosReaisDaAba(aba);
+  const indiceColunaId = cabecalhosReais.indexOf("id");
   const valores = aba.getDataRange().getValues();
 
   for (let i = 1; i < valores.length; i++) {
     if (String(valores[i][indiceColunaId]) === String(objeto.id)) {
-      const novaLinha = cabecalhos.map((campo, idx) =>
+      const novaLinha = cabecalhosReais.map((campo, idx) =>
         objeto[campo] !== undefined ? objeto[campo] : valores[i][idx]
       );
       aba.getRange(i + 1, 1, 1, novaLinha.length).setValues([novaLinha]);
@@ -83,8 +111,8 @@ function atualizarLinhaPorId(nomeAba, objeto) {
 /** Remove a primeira linha cuja coluna "id" bata com o id informado. */
 function removerLinhaPorId(nomeAba, id) {
   const aba = obterAba(nomeAba);
-  const cabecalhos = CABECALHOS_ABAS[nomeAba];
-  const indiceColunaId = cabecalhos.indexOf("id");
+  const cabecalhosReais = _cabecalhosReaisDaAba(aba);
+  const indiceColunaId = cabecalhosReais.indexOf("id");
   const valores = aba.getDataRange().getValues();
 
   for (let i = 1; i < valores.length; i++) {
